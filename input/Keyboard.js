@@ -2,6 +2,10 @@ function Keyboard()
 {
     this.initialize();
 }
+Keyboard.KeyboardEventArgs = function(keyCode)
+{
+    this.keyCode = keyCode;
+};
 
 Keyboard.prototype.initialize = function()
 {
@@ -11,8 +15,10 @@ Keyboard.prototype.initialize = function()
     for(var i = 0; i < this.keys.length; i++)
         this.keys[i] = false;
 
-    // Initialize a set of observers:
-    this.observers = new Set();
+    // Create event objects:
+    this.keyDownEvent = new Utils.Event();
+    this.keyPressEvent = new Utils.Event();
+    this.keyUpEvent = new Utils.Event();
 
     // Subscribe to the window keyboard related events:
     var keyboard = this;
@@ -26,65 +32,35 @@ Keyboard.prototype.initialize = function()
     };
 };
 
-Keyboard.prototype.onKeyDown = function(keyIndex)
+Keyboard.prototype.onKeyDown = function(keyCode)
 {
     // If key is not being already pressed:
-    if(!this.isKeyDown(keyIndex))
+    if(!this.isKeyDown(keyCode))
     {
         // Set key value to true:
-        this.keys[keyIndex] = true;
+        this.keys[keyCode] = true;
 
         // Notify that a key, which wasn't being pressed, is pressed now:
-        this.notifyKeyDown(keyIndex);
+        this.keyDownEvent.raise(this, new Keyboard.KeyboardEventArgs(keyCode));
     }
 
     // If key was already pressed:
     else
     {
         // Notify that key is continuously being pressed:
-        this.notifyKeyPress(keyIndex);
+        this.keyPressEvent.raise(this, new Keyboard.KeyboardEventArgs(keyCode));
     }
 };
-Keyboard.prototype.onKeyUp = function(keyIndex)
+Keyboard.prototype.onKeyUp = function(keyCode)
 {
     // Set key value to false:
-    this.keys[keyIndex] = false;
+    this.keys[keyCode] = false;
 
     // Notify that a key was released:
-    this.notifyKeyUp(keyIndex);
+    this.keyUpEvent.raise(this, new Keyboard.KeyboardEventArgs(keyCode));
 };
 
-Keyboard.prototype.isKeyDown = function(keyIndex)
+Keyboard.prototype.isKeyDown = function(keyCode)
 {
-    return this.keys[keyIndex];
-};
-
-Keyboard.prototype.addObserver = function(observer)
-{
-    this.observers.add(observer);
-};
-Keyboard.prototype.removeObserver = function(observer)
-{
-    this.observers.remove(observer);
-};
-
-// This event occurs once when a user presses a key:
-Keyboard.prototype.notifyKeyDown = function(keyIndex)
-{
-    for(var i = 0; i < this.observers.size(); i++)
-        this.observers.get(i).onKeyDown(keyIndex);
-};
-
-// This event can occur multiple times when a user holds down the same key:
-Keyboard.prototype.notifyKeyPress = function(keyIndex)
-{
-    for(var i = 0; i < this.observers.size(); i++)
-        this.observers.get(i).onKeyPress(keyIndex);
-};
-
-// This event occurs once when a user releases a key:
-Keyboard.prototype.notifyKeyUp = function(keyIndex)
-{
-    for(var i = 0; i < this.observers.size(); i++)
-        this.observers.get(i).onKeyUp(keyIndex);
+    return this.keys[keyCode];
 };

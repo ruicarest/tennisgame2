@@ -2,6 +2,10 @@ function Mouse()
 {
     this.initialize();
 }
+Mouse.MouseEvent = function(buttonIndex)
+{
+    this.buttonIndex = buttonIndex;
+};
 
 Mouse.prototype.initialize = function()
 {
@@ -10,8 +14,9 @@ Mouse.prototype.initialize = function()
     this.buttons = [ false, false, false ];
     this.wheel = 0.0;
 
-    // Initialize a set of observers:
-    this.observers = new Set();
+    // Create event objects:
+    this.buttonDownEvent = new Utils.Event();
+    this.buttonUpEvent = new Utils.Event();
 
     // Subscribe to the window mouse related events:
     var mouse = this;
@@ -42,31 +47,24 @@ Mouse.prototype.onWheel = function(deltaWheel)
 {
     this.wheel += deltaWheel;
 };
-Mouse.prototype.onButtonDown = function(index)
+Mouse.prototype.onButtonDown = function(buttonIndex)
 {
-    this.buttons[index] = true;
+    // Set button's value to true:
+    this.buttons[buttonIndex] = true;
+
+    // Notify that a button was pressed:
+    this.buttonDownEvent.raise(this, new Mouse.MouseEvent(buttonIndex));
 };
-Mouse.prototype.onButtonUp = function(index)
+Mouse.prototype.onButtonUp = function(buttonIndex)
 {
-    this.buttons[index] = false;
+    // Set button's value to false:
+    this.buttons[buttonIndex] = false;
+
+    // Notify that a button was released:
+    this.buttonUpEvent.raise(this, new Mouse.MouseEvent(buttonIndex));
 };
 
-Mouse.prototype.isButtonDown = function(index)
+Mouse.prototype.isButtonDown = function(buttonIndex)
 {
-    return this.buttons[index];
-};
-
-Mouse.prototype.addObserver = function(observer)
-{
-    this.observers.add(observer);
-};
-Mouse.prototype.removeObserver = function(observer)
-{
-    this.observers.remove(observer);
-};
-
-Mouse.prototype.notifyKeyDown = function(keyIndex)
-{
-    for(var i = 0; i < this.observers.size(); i++)
-        this.observers.get(i).onKeyDown(keyIndex);
+    return this.buttons[buttonIndex];
 };

@@ -1,14 +1,14 @@
-function Set()
+Utils.Set = function()
 {
     this.initialize();
-}
+};
 
-Set.prototype.initialize = function ()
+Utils.Set.prototype.initialize = function ()
 {
     this.objects = [];
 };
 
-Set.prototype.add = function(object)
+Utils.Set.prototype.add = function(object)
 {
     // If object is not contained in the array:
     if(!this.contains(object))
@@ -21,7 +21,7 @@ Set.prototype.add = function(object)
 
     return false;
 };
-Set.prototype.remove = function(object)
+Utils.Set.prototype.remove = function(object)
 {
     // Search for the object:
     var index = this.objects.indexOf(object);
@@ -37,15 +37,15 @@ Set.prototype.remove = function(object)
 
     return false;
 };
-Set.prototype.contains = function(object)
+Utils.Set.prototype.contains = function(object)
 {
     return this.objects.indexOf(object) !== -1;
 };
-Set.prototype.get = function(index)
+Utils.Set.prototype.get = function(index)
 {
     return this.objects[index];
 };
-Set.prototype.size = function()
+Utils.Set.prototype.size = function()
 {
     return this.objects.length;
 };
