@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>three.js webgl - squash test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+    body {
+        font-family: Monospace;
+        background-color: #000;
+        color: #fff;
+        margin: 0px;
+        overflow: hidden;
+    }
+    
+    #info {
+        color: #fff;
+        position: absolute;
+        top: 10px;
+        width: 100%;
+        text-align: center;
+        z-index: 100;
+        display: block;
+    }
+    
+    #info a,
+    .button {
+        color: #f00;
+        font-weight: bold;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="info">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r72/three.js"></script> - Tennis court test
+        <div id="loading">Loading...</div>
+    </div>
+    <script src="threejs/js/loaders/DDSLoader.js"></script>
+    <script src="threejs/js/loaders/MTLLoader.js"></script>
+    <script src="threejs/js/loaders/OBJMTLLoader.js"></script>
+    <script src="threejs/js/loaders/ColladaLoader.js"></script>
+    <script src='threejs/js/libs/dat.gui.min.js'></script>
+    <script src='threejs/js/tween.js'></script>
+    <script>
+
+    var container, stats;
+
+    var scaleCircle = 20;
+
+    var tween;
+
+    var tweenMovePlayer;
+
+    var tweenAnimateHit;
+
+    var tweenMovePlayerCount = 0;
+
+    var clicked = false;
+
+    var camera, scene, scene2, renderer;
+
+    var elevationCourt = -228.5;
+
+    var mouseX = 0,
+        mouseY = 0;
+
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+
+    var windowHalfX = window.innerWidth / 2;
+    var windowHalfY = window.innerHeight / 2;
+
+    var clock = new THREE.Clock();
+    var player;
+
+    var helper;
+
+    var bbox;
+
+    var handBoneLeft;
+
+    var handBoneRight;
+
+    var racket;
+
+    var animation;
+
+    var currentSequence = "idle";
+
+    var lightToAdd = true;
+
+    var skybox;
+
+    var gui;
+
+    var playerLoad = true;
+
+    var directionalLight;
+
+    var ambient;
+
+    var currentAnimation = 0;
+
+    var animationTest = {
+
+        startTime: 0.1,
+
+        endTime: 2.4,
+
+        manualPose: false
+
+    };
+
+    var circle;
+
+    var circlesHit = [];
+
+    var hittedCircle = -1;
+
+    var hitting = false;
+
+    // Using a little trigonometry calculate a point in
+    // space 1000 units in front of our character
+    var deltaX;
+    var deltaZ;
+
+    // Calculate where this collision focus point is in
+    // relation to our character position
+    var focusX;
+    var focusZ;
+
+    var movingUp;
+
+    var movingLeft;
+
+    var attachedRacket = false;
+
+    var playerMove = true;
+
+    var animationSegments = [
+
+        {
+            name: "idle", // 0
+            t0: 0.0,
+            tn: 2.4
+
+        },
+
+        {
+
+            name: "other", // 1
+            t0: 2.4,
+            tn: 5
+
+        },
+
+        {
+
+            name: "walk_front", // 2
+            t0: 6.17,
+            tn: 12.2
+
+        },
+
+        {
+
+            name: "right_to_left_opened", // 3
+            t0: 14.3,
+            tn: 17.2
+
+        },
+
+        {
+
+            name: "right_to_left_from_top", // 4
+            t0: 18.5,
+            tn: 20
+
+        },
+
+        {
+
+            name: "left_to_right_from_bottom",  // 5
+            t0: 20.5,
+            tn: 22.5
+
+        },
+
+
+
+        {
+
+            name: "walk_back",  // 6
+            t0: 24.0,
+            tn: 29.6
+
+        },
+
+
+        {
+
+            name: "low_right_to_left",  // 7
+            t0: 30.5,
+            tn: 32.5
+
+        },
+
+        {
+
+            name: "serve_high_right_to_left",  // 8
+            t0: 32.5,
+            tn: 35.0
+
+        },
+
+        {
+
+            name: "low_left_to_right",  // 9
+            t0: 35.0,
+            tn: 37.0
+
+        }
+
+
+
+    ];
+
+    var animationController = {
+        animation: 0
+    }
+
+    var colladaModel;
+
+    init();
+
+
+    function createHitCircles() {
+
+        var circlesN = 4;
+
+        var circlesTemp =[];
+
+        var zT = 250;
+        var xT = 250;
+
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x880000,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.5
+        });
+
+        var radius = 20;
+
+        var segments = 32;
+
+        var circleGeometry = new THREE.CircleGeometry(radius, segments);
+
+        for ( var i = 0; i < circlesN; i++ ) {
+                
+                circleTemp = new THREE.Mesh(circleGeometry, material);
+        
+                circleTemp.rotation.x = Math.PI / 2;
+
+                circleTemp.name = "hit_circle_" + i ; 
+        
+                circleTemp.position.set(
+                    
+                    xT * Math.pow( -1, i ),                 //positive/negative alternating
+                    
+                    -228.4, 
+                    
+                    zT * Math.pow( -1, ( i < 2 ) )          //2 positives then 2 negatives
+                    
+                    );
+
+                circlesTemp.push(circleTemp);
+        }
+
+        return circlesTemp;
+
+    }
+
+    function initGui() {
+
+
+        /*
+                var f0 = gui.addFolder('Animation Frames');
+
+                f0.add(animationTest, "startTime", 0.0, 299.0, 0.0001);
+                f0.add(animationTest, "endTime", 0.0, 300.0, 0.0001);
+                f0.add(animationTest, "manualPose");
+
+                f0.open();
+                */
+                var sizeT = animationSegments.length;
+/*
+                var f1 = gui.addFolder('Animations');
+
+                f1.add(animationController, "animation", 0.0, sizeT, 1)
+                    .onChange(function(newValue) {playAnimation();
+                    });
+          
+
+                f1.open();
+
+                */
+
+    }
+
+    function init() {
+
+        gui = new dat.GUI();
+
+//        initGui();
+
+        
+
+
+        container = document.createElement('div');
+        document.body.appendChild(container);
+
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+        //camera.position.z = 100;
+
+        camera.position.x = -600;
+
+        camera.position.y = 460;
+
+        // scene
+
+        scene = new THREE.Scene();
+
+        scene2 = new THREE.Scene();
+
+        ambient = new THREE.AmbientLight(0x444444);
+        // scene.add(ambient);
+
+        ambient = new THREE.AmbientLight(0x444444);
+        //scene.add(ambient);
+
+        directionalLight = new THREE.DirectionalLight(0xffeedd);
+        //directionalLight.position.set(10, 10, 100);
+        directionalLight.position.set(-400, 300, 90);
+        scene.add(directionalLight);
+
+        //scene2.add(directionalLight);
+
+
+        directionalLight.castShadow = true;
+
+        // model
+
+        var onProgress = function(xhr) {
+            if (xhr.lengthComputable) {
+                var percentComplete = xhr.loaded / xhr.total * 100;
+                console.log(Math.round(percentComplete, 2) + '% downloaded');
+            }
+        };
+
+        var onError = function(xhr) {};
+
+
+
+
+        THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
+
+
+        //
+
+        /*----------------------
+
+      SKYBOX INIT
+
+      ----------------------*/
+
+        var geometry = new THREE.CubeGeometry(10000, 10000, 10000);
+        var material = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            side: THREE.DoubleSide
+        });
+        var cube = new THREE.Mesh(geometry, material);
+
+        scene.add(cube);
+
+
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x008800,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.5
+        });
+
+        var radius = 20;
+        var segments = 32;
+
+        var circleGeometry = new THREE.CircleGeometry(radius, segments);
+        circle = new THREE.Mesh(circleGeometry, material);
+        circle.rotation.x = Math.PI / 2;
+
+        circle.position.set(
+            0, -228.4, -5.850006103515625);
+
+        circles = createHitCircles();
+
+        tween = new TWEEN.Tween(circle.scale).to({
+            x: 0.7,
+            y: 0.7,
+            z: 0.7
+        }, 600);
+
+        tween.onComplete(function() {
+            circle.scale.x = 1;
+            circle.scale.y = 1;
+            circle.scale.z = 1;
+            tween.start();
+        });
+
+        tween.start();
+
+
+        if (playerLoad === true) {
+
+            var loader3 = new THREE.ObjectLoader();
+            loader3.load('./squash/player/scene1.json', function(geometry) {
+
+                //var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
+
+
+                racket = geometry.children[0];
+
+            });
+
+            var loader2 = new THREE.ColladaLoader();
+            loader2.load("./squash/player/wip2.dae", function(collada) {
+
+                console.log(collada);
+
+                var transparentTest = true;
+
+                var bone;
+
+                collada.scene.traverse(function(child) {
+
+                    if (child.name.indexOf("racket") !== -1) {
+                        alert("rr");
+                        var geometry = new THREE.SphereGeometry(10, 32, 32);
+                        var material = new THREE.MeshBasicMaterial({
+                            color: 0x0000ff
+                        });
+
+                        var sphere = new THREE.Mesh(geometry, material);
+                        child.add(cube);
+
+
+                    }
+
+
+                    if (child instanceof THREE.Bone) {
+                        if (child.name.indexOf("joint18") !== -1) {
+                            var geometry = new THREE.BoxGeometry(10, 10, 10);
+                            //blue right hand
+                            var material = new THREE.MeshBasicMaterial({
+                                color: 0x0000ff
+                            });
+                            if (handBoneRight)
+                                material = new THREE.MeshBasicMaterial({
+                                    color: 0x00ff00
+                                });
+                            var cube = new THREE.Mesh(geometry, material);
+                            child.add(cube);
+
+                            console.log(child.name);
+
+                            if (handBoneRight === undefined)
+                                handBoneRight = child;
+                            else
+                                handBoneLeft = child;
+
+                        }
+                    }
+
+                });
+
+                var posta = 1;
+
+                collada.scene.traverse(function(child) {
+
+                    if (child instanceof THREE.Mesh) {
+
+                      //  alert(child.name);
+
+                        child.geometry.computeFaceNormals();
+
+                        child.geometry.computeVertexNormals();
+
+                        //                        scene.add(child);
+
+                        //                      child.position.x = posta;
+
+                        //                    posta+=10;
+
+
+
+                    }
+
+
+
+                    if (child instanceof THREE.SkinnedMesh) {
+
+                        //child.material=  new THREE.MeshPhongMaterial({color: 0xffffff, skinning: true});
+
+                        for (var i = 0; i < child.material.materials.length; i++) {
+
+                            var m = child.material.materials[i];
+                            m.skinning = true;
+
+                            console.log(child.material.materials[i].name);
+
+                            if (child.material.materials[i].name.indexOf("lambert3_001") !== -1) {
+                                m.transparent = true;
+                                m.opacity = 0.0;
+                                console.log(child.name);
+                                m.skinning = false;
+                                m.castShadow = true;
+                                m.visible=false;
+                                // racket = child;
+                                //bone.add( child );
+                                ///   m.colorWrite = true;
+                            } else {
+
+                                //   m.transparent = true;
+                                // m.opacity = 0.9;
+                                //    m.colorWrite = true;
+
+
+                            }
+
+                            transparentTest = !transparentTest;
+
+                            m.shading = THREE.SmoothShading;
+
+                        }
+
+                        child.material.skinning = true;
+
+                        child.material.shading = THREE.SmoothShading;
+
+                        animation = new THREE.Animation(child, child.geometry.animation);
+
+                        animation.play();
+
+                        camera.lookAt(child.position);
+
+                        child.scale.x = child.scale.y = child.scale.z = 1;
+
+                        child.rotation.y = Math.PI / 2;
+                        child.updateMatrix();
+
+                        player = child;
+
+                        player.castShadow = true;
+                        // player.receiveShadow = true;
+
+                        player.name = "player1";
+
+                        if (transparentTest)
+                            scene.add(player);
+                        else
+                            scene.add(player);
+                        helper = new THREE.BoundingBoxHelper(player, 0xff0000);
+                        helper.update();
+                        helper.rotation.y = Math.PI / 2;
+                        // If you want a visible bounding box
+                        //player.add(helper);
+                        helper.position.set(0, -elevationCourt / 2, 0);
+
+                        deltaX = Math.floor(Math.sin(player.rotation.y) * 1000);
+
+                        deltaZ = Math.floor(Math.cos(player.rotation.y) * 1000);
+
+                        focusX = player.position.x - deltaX;
+
+                        focusZ = player.position.z - deltaZ;
+
+                        directionalLight.position.set(
+
+                            directionalLight.position.x + player.position.x * 2,
+                            directionalLight.position.y + player.position.y * 2,
+                            directionalLight.position.z + player.position.z * 2
+
+                        );
+
+                        // $("#loading").hide();
+                        document.getElementById("loading").style.display = "none";;
+
+                    }
+
+                });
+
+                //scene.add( collada.scene );
+
+            });
+
+        }
+
+
+        var loader = new THREE.ColladaLoader();
+
+
+        loader.load('squash/court2.DAE', function(result) {
+
+            result.scene.scale.x = result.scene.scale.y = result.scene.scale.z = 1;
+
+            //colladaModel = result.scene;
+
+            var posNew;
+
+            result.scene.traverse(function(child2) {
+
+
+                console.log("newChild:")
+
+                console.log(child2);
+
+                console.log(child2.rotation);
+                console.log(child2.position);
+
+                //scenario positioning - NOT WORKING - UUID & ID ARE NOT STATIC
+                if (child2.uuid == "D6C69FCC-C655-4A1D-B0E3-B6321524B1F4") {
+
+                    console.log("pivot");
+
+                    posNew = child2.position;
+
+                    //alert(posNew.y);
+                }
+
+                if (child2 instanceof THREE.Mesh) {
+
+                    if (child2.name != "bbox") {
+                        var helper2 = new THREE.BoundingBoxHelper(child2, 0x00ff00);
+                        helper2.update();
+                        helper2.rotation.y = Math.PI / 2;
+                        // If you want a visible bounding box
+                        helper2.name = "bbox";
+                        //scene.add(helper2);
+                        helper2.position.set(-5.850006103515625, 228.5, 0);
+                    }
+
+                    colladaModel = child2;
+
+                    //colladaModel.castShadow = true;
+                    colladaModel.receiveShadow = true;
+
+                    colladaModel.name = "court";
+
+                    scene.add(colladaModel);
+
+
+
+                    console.log("colladaModel:")
+
+                    console.log(colladaModel);
+
+
+                    //scenario displacement
+                    colladaModel.position.set(-5.850006103515625, 228.5, 0);
+
+                }
+
+            });
+
+        
+
+
+        });
+
+
+        var textureEquirec;
+
+        textureEquirec = THREE.ImageUtils.loadTexture("skydome.jpg");
+
+        textureEquirec.format = THREE.RGBAFormat;
+
+        textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
+
+        textureEquirec.magFilter = THREE.LinearFilter;
+
+        textureEquirec.minFilter = THREE.NearestFilter;
+
+        var equirectShader = THREE.ShaderLib["equirect"];
+
+        var equirectMaterial = new THREE.ShaderMaterial({
+            fragmentShader: equirectShader.fragmentShader,
+            vertexShader: equirectShader.vertexShader,
+            uniforms: equirectShader.uniforms,
+            depthWrite: false,
+            side: THREE.BackSide
+        });
+
+        equirectMaterial.uniforms["tEquirect"].value = textureEquirec;
+
+        var geometry = new THREE.BoxGeometry(1000, 1000, 1000);
+
+
+        skybox = new THREE.Mesh(geometry, equirectMaterial);
+
+        //scene.add(skybox);
+
+        //
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        //renderer.setClearColor( 0xff0000 );
+
+        //renderer.autoClear = false;
+
+        renderer.autoClearDepth = false;
+
+        renderer.autoClearColor = false;
+
+        renderer.sortObjects = false;
+
+
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
+
+        container.appendChild(renderer.domElement);
+
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+if(playerMove)
+        document.addEventListener("click", onDocumentClick, false);
+
+        //
+
+        window.addEventListener('resize', onWindowResize, false);
+
+        animate();
+
+    }
+
+    function onWindowResize() {
+
+        windowHalfX = window.innerWidth / 2;
+        windowHalfY = window.innerHeight / 2;
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+    }
+
+    function checkHitCirclesCollision(){
+
+        var distanceRadius = 20;
+
+        for ( var i = 0; i < circles.length; i++ ){
+
+            var distanceToRedX = Math.abs( circles[i].position.x - circle.position.x );
+            var distanceToRedZ = Math.abs( circles[i].position.z - circle.position.z );
+
+            if ( distanceToRedX < distanceRadius && distanceToRedZ < distanceRadius )
+                hittedCircle = i;
+
+           // console.log ("i:" + i + " distanceX:" + distanceToRedX + " distanceZ:" + distanceToRedZ);
+
+        }
+
+        if ( hittedCircle !== -1 )
+            {
+
+                console.log( "hitted circle:" + hittedCircle );
+
+
+
+                if ( tweenMovePlayer !== undefined && tweenMovePlayerCount !== 0 ) {
+
+                    tweenMovePlayer.stop();
+                    tweenMovePlayerCount--;
+                    console.log("tweenMovePlayerCount:" + tweenMovePlayerCount);
+                
+                }
+
+                hitting = true;
+
+                playHit();
+
+                hittedCircle = -1;
+
+                animation.timeScale = 2;
+
+                return true;
+
+            }
+
+            return false;
+
+    }
+
+    function onDocumentClick(event) {
+
+        console.log("clicked on x " + circle.position.x + "and z " + circle.position.z);
+
+        if (checkHitCirclesCollision())
+            return;
+
+        if ( !clicked || true ) {
+
+            if ( hitting )
+                {
+                    return;
+                    hitting = false;
+                }
+
+            if (player.position.x >= circle.position.x) {
+
+                currentAnimation = 6;
+                movingUp = false;
+
+            } else {
+
+                currentAnimation = 2;
+                movingUp = true;
+
+            }
+
+            if (player.position.z >= circle.position.z) {
+
+
+                movingLeft = false;
+
+            } else {
+
+                movingLeft = true;
+
+            }
+
+            animation.timeScale = 10;
+
+            clicked = true;
+
+            var speed = 0.25;
+            var c1 = Math.pow(Math.abs(player.position.x - Math.min(circle.position.x, 400)), 2);
+            var c2 = Math.pow(Math.abs(player.position.z - Math.max(-260, Math.min(circle.position.z, 260))), 2);
+            var distance = Math.sqrt(c1 + c2);
+            var time = distance / speed;
+
+
+            focusX = circle.position.x - deltaX;
+            focusZ = circle.position.z - deltaZ;
+            // Fire a ray from the centre point of our character to the
+            // collision focus point
+
+            var raycaster2 = new THREE.Raycaster(new THREE.Vector3(circle.position.x, circle.position.y + 10, circle.position.z),
+                new THREE.Vector3(1, 0, 0), 0, 100);
+
+            var intersects = raycaster2.intersectObject(colladaModel);
+            if (intersects.length > 0)
+                alert(raycaster2.ray.origin.distanceTo(intersects[0].point));
+
+            raycaster2 = new THREE.Raycaster(circle.position,
+                new THREE.Vector3(-1, 0, 0), 0, 100);
+
+            var intersects = raycaster2.intersectObject(colladaModel);
+            if (intersects.length > 0)
+                alert(raycaster2.ray.origin.distanceTo(intersects[0].point));
+
+            raycaster2 = new THREE.Raycaster(circle.position,
+                new THREE.Vector3(0, 0, 1), 0, 100);
+
+            var intersects = raycaster2.intersectObject(colladaModel);
+            if (intersects.length > 0)
+                alert(raycaster2.ray.origin.distanceTo(intersects[0].point));
+
+            //            TWEEN.removeTweens( player.position );
+
+            tweenMovePlayerCount++;
+
+            if ( playerMove ){
+
+                if ( tweenMovePlayer !== undefined && tweenMovePlayerCount > 1 )
+                    {
+
+                    tweenMovePlayer.stop();
+                    tweenMovePlayerCount--;
+                }
+                else if (tweenMovePlayerCount === 0 )
+                    tweenMovePlayer.stop();
+
+                console.log("tweenMovePlayerCount:" + tweenMovePlayerCount);
+
+                tweenMovePlayer = new TWEEN.Tween(player.position, {
+                    override: true
+                }).to({
+
+                    x: Math.min(circle.position.x, 400),
+
+                    z: Math.max(-260, Math.min(circle.position.z, 260))
+
+                }, time);
+
+                tweenMovePlayer.onComplete(function() {
+
+                    //alert("end tween");
+
+                    tweenMovePlayerCount--;
+
+                    //circle.scale.x = 1;
+                    //circle.scale.y = 1;
+                    //circle.scale.z = 1;
+                    //tweenMovePlayer.start();
+
+                    if (tweenMovePlayerCount === 0) {
+
+                        clicked = false;
+
+                        currentAnimation = 0;
+
+                        animation.timeScale = 1;
+
+                        //playHit();
+                    }
+                });
+
+                tweenMovePlayer.start();
+
+}
+
+else {
+
+
+    playAnimation();
+
+}
+        }
+
+    }
+
+    function playHit() {
+
+        /*
+        currentAnimation = 4;
+
+        if (movingUp && movingLeft)
+            currentAnimation = 4;
+
+        if (movingUp && !movingLeft)
+            currentAnimation = 5;
+
+        if (!movingUp && !movingLeft)
+            currentAnimation = 6;
+        */
+        //alert("hit animation: " + currentAnimation );
+
+        if ( hittedCircle === 0 )       //top left 
+            currentAnimation = 9;
+        
+        if ( hittedCircle === 1 )       //bottom left 
+            currentAnimation = 5;
+        
+        if ( hittedCircle === 2 )       //top right
+            currentAnimation = 3;
+        
+        if ( hittedCircle === 3 )       //bottom right
+            currentAnimation = 4;
+
+
+        hitting = true;
+
+        animation.timeScale = 0.25;
+
+        startTime = animationSegments[ currentAnimation ].t0;
+
+        animation.play(startTime);
+
+
+
+    }
+
+
+    function playAnimation() {
+
+        currentAnimation = Math.floor(animationController.animation);
+
+        if (animation !== undefined)
+            animation.timeScale = 0.25;
+
+        hitting = true;
+
+    }
+
+    function onDocumentMouseMove(event) {
+
+        mouseX = (event.clientX - windowHalfX) / 2;
+        mouseY = -(event.clientY);
+
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+
+        var intersects = raycaster.intersectObject(colladaModel, true);
+
+        if (intersects.length > 0 && player !== undefined && colladaModel !== undefined) {
+
+            //console.log(intersects.length);
+
+            var intText = "Intersected :\n";
+
+            for (var i = 0; i < intersects.length; i++) {
+
+                intText += intersects[i].object.name + " faceIndex:" + intersects[i].faceIndex + "\n";
+
+                if (intersects[i].object.name.indexOf(player.name) > -1) {
+
+                    //console.log("Inside player cycle");
+
+                }
+
+                if (intersects[i].object.name.indexOf(colladaModel.name) > -1 && (intersects[i].faceIndex === 14 || intersects[i].faceIndex === 15 || intersects[i].faceIndex === 13)) {
+
+                    colladaModel.add(player);
+
+                    if ( lightToAdd ) {
+                        player.add(new THREE.AmbientLight(0x777777));
+
+                        //alert(circles.length);
+
+                        for (var i = 0; i< circles.length; i++)
+                        colladaModel.add(circles[i]);
+
+                        lightToAdd = false;
+
+                    }
+                    player.position.y = elevationCourt;
+
+                    colladaModel.add(circle);
+
+                    circle.position.set(
+                        intersects[i].point.x,
+                        intersects[i].point.y - 227.4,
+                        intersects[i].point.z - 5.850006103515625);
+
+                }
+
+            }
+
+            //console.log(intText);
+
+        }
+
+
+
+    }
+
+    function checkRacketAttached() {
+
+        if ( !attachedRacket && (racket !== undefined) && (handBoneRight !== undefined) ) {
+
+            handBoneRight.add( racket );
+
+            racket.geometry.center();
+
+            racket.rotation.z=0;
+
+            racket.position.set(-3, 15,27.400660037994385);
+
+            attachedRacket = true;
+        }
+
+    }
+
+    //
+
+    function animate(time) {
+
+        checkRacketAttached();
+
+        requestAnimationFrame(animate);
+
+ 
+
+        if (animation !== undefined) {
+
+            var startTime;
+
+            var endTime;
+
+           // console.log("animation current time:" + animation.currentTime);
+          //  console.log(currentAnimation);
+            if (!animationTest.manualPose && animationSegments !== undefined) {
+
+                startTime = animationSegments[currentAnimation].t0;
+                endTime = animationSegments[currentAnimation].tn;
+
+            } 
+
+            else {
+
+                startTime = animationTest.startTime;
+                endTime = animationTest.endTime;
+
+            }
+
+            if (animation.currentTime <= startTime ||
+                animation.currentTime > endTime) {
+
+                if (hitting && animation.currentTime > endTime) {
+
+                    currentAnimation = 0;
+
+                    animation.currentTime = 0;
+
+                    startTime = animationSegments[currentAnimation].t0;
+
+                    endTime = animationSegments[currentAnimation].tn;
+
+                    hitting = false;
+
+                }
+
+                console.log(
+                    animationSegments[currentAnimation].name + " start:" + animationSegments[currentAnimation].t0 + " end: " + animationSegments[currentAnimation].tn);
+
+                animation.stop();
+
+
+
+                animation.play(startTime); // play the animation not looped, from t0
+            }
+
+        }
+
+       THREE.AnimationHandler.update(clock.getDelta());
+
+        TWEEN.update(time);
+
+        render();
+
+    }
+
+    function render() {
+
+        //camera.position.x += (mouseX - camera.position.x) * .05;
+        //camera.position.y += 2.0 + (-mouseY - camera.position.y) * .05;
+
+        //camera.lookAt(scene.position);
+
+        if (colladaModel !== undefined) {
+
+            //  colladaModel.position.y = -20000;
+
+            //camera.position.y = -20000;
+
+            //camera.lookAt(colladaModel.position);
+
+            //camera.lookAt(circle.position);
+
+        }
+        renderer.clear();
+        renderer.render(scene, camera);
+
+        if (player !== undefined) {
+
+
+            // colorWriteSet(player,true);
+            // colorWriteSet(circle,true);
+            //renderer.render(circle, camera);
+            // renderer.render(player, camera);
+            //colorWriteSet(player,false);
+            //colorWriteSet(circle,false);
+
+
+
+
+
+        }
+
+        //renderer.clearDepth();
+        //renderer.render(scene2, camera);
+
+    }
+
+    var colorWriteSet = function(object, value) {
+
+        object.traverse(function(child) {
+
+            if (child instanceof THREE.SkinnedMesh || child instanceof THREE.Mesh) {
+
+                if (child.material.materials !== undefined)
+                    for (var i = 0; i < child.material.materials.length; i++) {
+
+                        child.material.materials[i].colorWrite = value;
+                    } else
+                    child.material.colorWrite = value;
+
+            }
+        });
+
+
+
+    }
+    </script>
+</body>
+
+</html>

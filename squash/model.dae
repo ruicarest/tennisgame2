@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2015-11-05T12:50:56Z</created><keywords></keywords><modified>2015-11-05T12:50:56Z</modified><revision></revision><subject></subject><title></title><unit meter="0.025400" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
+  <library_images>
+    <image id="Map #0-image" name="Map #0"><init_from>model/court01.jpg</init_from></image>
+  </library_images>
+  <library_materials>
+    <material id="Material #2" name="Material #2">
+      <instance_effect url="#Material #2-fx"/>
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="Material #2-fx" name="Material #2">
+      <profile_COMMON>
+        <technique sid="standard">
+          <phong>
+            <emission>
+              <color sid="emission">0.000000  0.000000 0.000000 1.000000</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0.588000  0.588000 0.588000 1.000000</color>
+            </ambient>
+            <diffuse>
+              <texture texture="Map #0-image" texcoord="CHANNEL0">
+                <extra>
+                  <technique profile="MAYA">
+                    <wrapU sid="wrapU0">TRUE</wrapU>
+                    <wrapV sid="wrapV0">TRUE</wrapV>
+                    <blend_mode>ADD</blend_mode>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.000000  0.000000 0.000000 1.000000</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">2.000000</float>
+            </shininess>
+            <reflective>
+              <color sid="reflective">0.000000  0.000000 0.000000 1.000000</color>
+            </reflective>
+            <reflectivity>
+              <float sid="reflectivity">1.000000</float>
+            </reflectivity>
+            <transparent opaque="RGB_ZERO">
+              <color sid="transparent">1.000000  1.000000 1.000000 1.000000</color>
+            </transparent>
+            <transparency>
+              <float sid="transparency">0.000000</float>
+            </transparency>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="tutaj-lib" name="tutajMesh">
+      <mesh>
+        <source id="tutaj-POSITION">
+          <float_array id="tutaj-POSITION-array" count="51">
+-493.350006 0.000000 320.000000
+481.649994 0.000000 320.000000
+-493.350006 515.651611 320.000000
+481.649994 515.651611 320.000000
+-493.350006 515.651611 -320.000000
+481.649994 515.651611 -320.000000
+-493.350006 0.000000 -320.000000
+481.649994 0.000000 -320.000000
+-493.350006 0.000000 331.700012
+-493.350006 527.351624 331.700012
+493.350006 527.351624 331.700012
+-493.350006 527.351624 -331.700012
+493.350006 527.351624 -331.700012
+-493.350006 0.000000 -331.700012
+-234.749771 0.000000 -320.000000
+481.649994 2.314606 331.700012
+481.649994 0.000000 -331.700012
+</float_array>
+          <technique_common>
+            <accessor source="#tutaj-POSITION-array" count="17" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="tutaj-Normal0">
+          <float_array id="tutaj-Normal0-array" count="216">
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 -1.000000 0.000000
+0.000000 0.000000 0.000000
+0.000000 0.000000 0.000000
+0.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 1.000000 0.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+-1.000000 0.000001 0.000000
+-1.000000 0.000001 0.000000
+-1.000000 0.000001 0.000000
+-1.000000 0.000001 0.000000
+-1.000000 0.000001 0.000000
+-1.000000 0.000001 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+-1.000000 0.000000 0.000000
+</float_array>
+          <technique_common>
+            <accessor source="#tutaj-Normal0-array" count="72" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="tutaj-UV0">
+          <float_array id="tutaj-UV0-array" count="92">
+0.000000 0.782067
+0.000000 0.782067
+0.000000 0.782067
+0.781139 0.449898
+0.781139 0.639890
+0.686933 0.639890
+0.894408 0.449898
+0.894408 0.639890
+0.917313 0.994139
+0.912607 0.989434
+0.987853 0.639890
+0.897813 0.639890
+0.897813 0.449898
+0.883833 0.989841
+0.883833 0.679949
+0.684832 0.989841
+0.684832 0.679949
+0.595486 0.032813
+0.595486 0.418113
+0.905924 0.032813
+0.905924 0.418113
+0.360800 0.849156
+0.360800 0.989841
+0.360800 0.459417
+0.012624 0.989841
+0.012624 0.459417
+0.006153 0.110551
+0.557318 0.110551
+0.006153 0.402703
+0.557318 0.402703
+0.376393 0.438675
+0.376393 0.989841
+0.668544 0.989841
+0.668544 0.438675
+0.915109 0.425156
+0.922153 0.432200
+0.915109 0.039857
+0.922153 0.032813
+0.928153 0.989434
+0.923448 0.994139
+0.923448 0.782067
+0.928153 0.782067
+0.912607 0.782067
+0.917313 0.782067
+0.687348 0.452152
+0.987853 0.452152
+</float_array>
+          <technique_common>
+            <accessor source="#tutaj-UV0-array" count="46" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="tutaj-VERTEX">
+          <input semantic="POSITION" source="#tutaj-POSITION"/>
+        </vertices>
+        <triangles count="24" material="Material #2"><input semantic="VERTEX" offset="0" source="#tutaj-VERTEX"/><input semantic="NORMAL" offset="1" source="#tutaj-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#tutaj-UV0"/><p> 9 0 4 15 1 44 10 2 3 15 3 44 9 4 4 8 5 5 9 6 4 10 7 3 11 8 7 10 9 3 12 10 6 11 11 7 16 12 45 13 13 10 11 14 11 16 15 45 11 16 11 12 17 12 4 18 15 3 19 14 2 20 13 3 21 14 4 22 15 5 23 16 7 24 0 6 25 1 14 26 2 1 27 17 3 28 19 7 29 18 3 30 19 5 31 20 7 32 18 4 33 31 7 34 33 5 35 30 7 36 33 4 37 31 6 38 32 1 39 25 14 40 21 0 41 24 14 42 21 1 43 25 7 44 23 0 45 24 14 46 21 6 47 22 1 48 29 0 49 28 2 50 26 1 51 29 2 52 26 3 53 27 9 54 37 11 55 35 4 56 34 9 57 37 4 58 34 2 59 36 2 60 9 8 61 43 9 62 8 8 63 43 2 64 9 0 65 42 4 66 38 13 67 40 6 68 41 13 69 40 4 70 38 11 71 39</p></triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_animations>
+    <animation id="Player-anim" name="Player"><animation><source id="Player-Matrix-animation-input"><float_array id="Player-Matrix-animation-input-array" count="1">
+
+0.033333</float_array><technique_common><accessor source="#Player-Matrix-animation-input-array" count="1"><param name="TIME" type="float"/></accessor></technique_common></source><source id="Player-Matrix-animation-output-transform"><float_array id="Player-Matrix-animation-output-transform-array" count="16">
+
+0.000000 -0.000000 0.393701 0.000000 0.000000 0.393701 0.000000 0.000000 -0.393701 -0.000000 0.000000 -0.000004 0.000000 0.000000 0.000000 1.000000</float_array><technique_common><accessor source="#Player-Matrix-animation-output-transform-array" count="1" stride="16"><param type="float4x4"/></accessor></technique_common></source><source id="Player-Interpolations"><Name_array id="Player-Interpolations-array" count="1">
+ LINEAR</Name_array><technique_common><accessor source="#Player-Interpolations-array" count="1"><param type="name"/></accessor></technique_common></source><sampler id="Player-Matrix-animation-transform"><input semantic="INPUT" source="#Player-Matrix-animation-input"/><input semantic="OUTPUT" source="#Player-Matrix-animation-output-transform"/><input semantic="INTERPOLATION" source="#Player-Interpolations"/></sampler><channel source="#Player-Matrix-animation-transform" target="Player/matrix"/></animation></animation>
+    <animation id="pCube7-anim" name="pCube7"><animation><source id="pCube7-Matrix-animation-input"><float_array id="pCube7-Matrix-animation-input-array" count="1">
+
+0.033333</float_array><technique_common><accessor source="#pCube7-Matrix-animation-input-array" count="1"><param name="TIME" type="float"/></accessor></technique_common></source><source id="pCube7-Matrix-animation-output-transform"><float_array id="pCube7-Matrix-animation-output-transform-array" count="16">
+
+0.393701 0.000000 0.000000 0.000000 0.000000 0.393701 0.000000 0.000000 0.000000 0.000000 0.393701 0.000000 0.000000 0.000000 0.000000 1.000000</float_array><technique_common><accessor source="#pCube7-Matrix-animation-output-transform-array" count="1" stride="16"><param type="float4x4"/></accessor></technique_common></source><source id="pCube7-Interpolations"><Name_array id="pCube7-Interpolations-array" count="1">
+ LINEAR</Name_array><technique_common><accessor source="#pCube7-Interpolations-array" count="1"><param type="name"/></accessor></technique_common></source><sampler id="pCube7-Matrix-animation-transform"><input semantic="INPUT" source="#pCube7-Matrix-animation-input"/><input semantic="OUTPUT" source="#pCube7-Matrix-animation-output-transform"/><input semantic="INTERPOLATION" source="#pCube7-Interpolations"/></sampler><channel source="#pCube7-Matrix-animation-transform" target="pCube7/matrix"/></animation></animation>
+    <animation id="polySurface315-anim" name="polySurface315"><animation><source id="polySurface315-Matrix-animation-input"><float_array id="polySurface315-Matrix-animation-input-array" count="0">
+</float_array><technique_common><accessor source="#polySurface315-Matrix-animation-input-array" count="0"><param name="TIME" type="float"/></accessor></technique_common></source><source id="polySurface315-Matrix-animation-output-transform"><float_array id="polySurface315-Matrix-animation-output-transform-array" count="0">
+</float_array><technique_common><accessor source="#polySurface315-Matrix-animation-output-transform-array" count="0" stride="16"><param type="float4x4"/></accessor></technique_common></source><source id="polySurface315-Interpolations"><Name_array id="polySurface315-Interpolations-array" count="0">
+</Name_array><technique_common><accessor source="#polySurface315-Interpolations-array" count="0"><param type="name"/></accessor></technique_common></source><sampler id="polySurface315-Matrix-animation-transform"><input semantic="INPUT" source="#polySurface315-Matrix-animation-input"/><input semantic="OUTPUT" source="#polySurface315-Matrix-animation-output-transform"/><input semantic="INTERPOLATION" source="#polySurface315-Interpolations"/></sampler><channel source="#polySurface315-Matrix-animation-transform" target="polySurface315/matrix"/></animation></animation>
+    <animation id="tutaj-anim" name="tutaj"><animation><source id="tutaj-Matrix-animation-input"><float_array id="tutaj-Matrix-animation-input-array" count="0">
+</float_array><technique_common><accessor source="#tutaj-Matrix-animation-input-array" count="0"><param name="TIME" type="float"/></accessor></technique_common></source><source id="tutaj-Matrix-animation-output-transform"><float_array id="tutaj-Matrix-animation-output-transform-array" count="0">
+</float_array><technique_common><accessor source="#tutaj-Matrix-animation-output-transform-array" count="0" stride="16"><param type="float4x4"/></accessor></technique_common></source><source id="tutaj-Interpolations"><Name_array id="tutaj-Interpolations-array" count="0">
+</Name_array><technique_common><accessor source="#tutaj-Interpolations-array" count="0"><param type="name"/></accessor></technique_common></source><sampler id="tutaj-Matrix-animation-transform"><input semantic="INPUT" source="#tutaj-Matrix-animation-input"/><input semantic="OUTPUT" source="#tutaj-Matrix-animation-output-transform"/><input semantic="INTERPOLATION" source="#tutaj-Interpolations"/></sampler><channel source="#tutaj-Matrix-animation-transform" target="tutaj/matrix"/></animation></animation>
+  </library_animations>
+  <library_visual_scenes>
+    <visual_scene id="Court_1" name="Court_1">
+      <node name="Player" id="Player" sid="Player"><matrix sid="matrix">0.000000 -0.000000 0.393701 0.000000 0.000000 0.393701 0.000000 0.000000 -0.393701 -0.000000 0.000000 -0.000004 0.000000 0.000000 0.000000 1.000000</matrix><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <node name="pCube7" id="pCube7" sid="pCube7"><matrix sid="matrix">0.393701 0.000000 0.000000 0.000000 0.000000 0.393701 0.000000 0.000000 0.000000 0.000000 0.393701 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra><node name="polySurface315" id="polySurface315" sid="polySurface315"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra><node name="tutaj" id="tutaj" sid="tutaj"><matrix sid="matrix">0.000000 0.000000 1.000000 5.850006 0.000000 1.000000 0.000000 -0.367264 -1.000000 0.000000 0.000000 -0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#tutaj-lib"><bind_material><technique_common><instance_material symbol="Material #2" target="#Material #2"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node></node></node>
+      <extra><technique profile="MAX3D"><frame_rate>30.000000</frame_rate></technique><technique profile="FCOLLADA"><start_time>0.000000</start_time><end_time>3.333333</end_time></technique></extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Court_1"></instance_visual_scene>
+  </scene>
+</COLLADA>
