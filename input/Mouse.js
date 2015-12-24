@@ -2,9 +2,9 @@ function Mouse()
 {
     this.initialize();
 }
-Mouse.MouseEvent = function(buttonIndex)
+Mouse.MouseEvent = function(buttonCode)
 {
-    this.buttonIndex = buttonIndex;
+    this.buttonCode = buttonCode;
 };
 
 Mouse.prototype.initialize = function()
@@ -47,24 +47,24 @@ Mouse.prototype.onWheel = function(deltaWheel)
 {
     this.wheel += deltaWheel;
 };
-Mouse.prototype.onButtonDown = function(buttonIndex)
+Mouse.prototype.onButtonDown = function(buttonCode)
 {
     // Set button's value to true:
-    this.buttons[buttonIndex] = true;
+    this.buttons[buttonCode] = true;
 
     // Notify that a button was pressed:
-    this.buttonDownEvent.raise(this, new Mouse.MouseEvent(buttonIndex));
+    this.buttonDownEvent.raise(this, new Mouse.MouseEvent(buttonCode));
 };
-Mouse.prototype.onButtonUp = function(buttonIndex)
+Mouse.prototype.onButtonUp = function(buttonCode)
 {
     // Set button's value to false:
-    this.buttons[buttonIndex] = false;
+    this.buttons[buttonCode] = false;
 
     // Notify that a button was released:
-    this.buttonUpEvent.raise(this, new Mouse.MouseEvent(buttonIndex));
+    this.buttonUpEvent.raise(this, new Mouse.MouseEvent(buttonCode));
 };
 
-Mouse.prototype.isButtonDown = function(buttonIndex)
+Mouse.prototype.isButtonDown = function(buttonCode)
 {
-    return this.buttons[buttonIndex];
+    return this.buttons[buttonCode];
 };

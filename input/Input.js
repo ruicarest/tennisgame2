@@ -2,6 +2,16 @@ function Input()
 {
     this.initialize();
 }
+Input.KeyboardEventArgs = function(keyCode, holdTime)
+{
+    this.keyCode = keyCode;
+    this.holdTime = holdTime;
+};
+Input.MouseEventArgs = function(buttonCode, holdTime)
+{
+    this.buttonCode = buttonCode;
+    this.holdTime = holdTime;
+};
 
 Input.prototype.initialize = function()
 {
@@ -24,38 +34,48 @@ Input.prototype.initialize = function()
     // Initialize mouse timestamps:
     this.mouseTimestamps = [];
     this.mouseTimestamps.length = 3;
-    for(var i = 0; i < this.mouseTimestamps.length; i++)
-        this.mouseTimestamps[i] = 0.0;
+    for(var j = 0; j < this.mouseTimestamps.length; j++)
+        this.mouseTimestamps[j] = 0.0;
+
+    // Create event objects:
+    this.keyboardInputEvent = new Utils.Event();
+    this.mouseInputEvent = new Utils.Event();
 };
 
 Input.prototype.Keyboard_onKeyDown = function(sender, eventArgs)
 {
-    console.log("Key Down: " + eventArgs.keyCode);
-
+    // Set timestamp of the key down event:
     this.keyboardTimestamps[eventArgs.keyCode] = Date.now();
 };
 Input.prototype.Keyboard_onKeyUp = function(sender, eventArgs)
 {
-    console.log("Key Up: " + eventArgs.keyCode);
+    var keyCode = eventArgs.keyCode;
 
-    var keyDownTimestamp = this.keyboardTimestamps[eventArgs.keyCode];
-    var deltaTime = Date.now() - keyDownTimestamp;
+    // Get timestamp of the key down event:
+    var keyDownTimestamp = this.keyboardTimestamps[keyCode];
 
-    console.log("Key Input: " + eventArgs.keyCode + " pressed for " + deltaTime);
+    // Calculate how much time it passed since the key down event was raised:
+    var holdTime = Date.now() - keyDownTimestamp;
+
+    // Raise keyboard input event:
+    this.keyboardInputEvent.raise(this, new Input.KeyboardEventArgs(keyCode, holdTime));
 };
 
 Input.prototype.Mouse_onButtonDown = function(sender, eventArgs)
 {
-    console.log("Button Down: " + eventArgs.buttonIndex);
-
-    this.mouseTimestamps[eventArgs.buttonIndex] = Date.now();
+    // Set timestamp of the button down event:
+    this.mouseTimestamps[eventArgs.buttonCode] = Date.now();
 };
 Input.prototype.Mouse_onButtonUp = function(sender, eventArgs)
 {
-    console.log("Button Up: " + eventArgs.buttonIndex);
+    var buttonCode = eventArgs.buttonCode;
 
-    var mouseDownTimestamp = this.mouseTimestamps[eventArgs.buttonIndex];
-    var deltaTime = Date.now() - mouseDownTimestamp;
+    // Get timestamp of the button down event:
+    var mouseDownTimestamp = this.mouseTimestamps[buttonCode];
 
-    console.log("Mouse Button Input: " + eventArgs.buttonIndex + " pressed for " + deltaTime);
+    // Calculate how much time it passed since the button down event was raised:
+    var holdTime = Date.now() - mouseDownTimestamp;
+
+    // Raise mouse input event:
+    this.mouseInputEvent.raise(this, new Input.MouseEventArgs(buttonCode, holdTime));
 };
