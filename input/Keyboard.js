@@ -1,5 +1,6 @@
 function Keyboard()
 {
+    this.initialize();
 }
 
 Keyboard.prototype.initialize = function()
@@ -12,7 +13,6 @@ Keyboard.prototype.initialize = function()
 
     // Initialize a set of observers:
     this.observers = new Set();
-    this.observers.initialize();
 
     // Subscribe to the window keyboard related events:
     var keyboard = this;

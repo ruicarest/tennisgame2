@@ -1,5 +1,6 @@
 function Set()
 {
+    this.initialize();
 }
 
 Set.prototype.initialize = function ()
