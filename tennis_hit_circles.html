@@ -135,6 +135,8 @@
 
     var hitting = false;
 
+    var input;
+
     // Using a little trigonometry calculate a point in
     // space 1000 units in front of our character
     var deltaX;
@@ -243,7 +245,7 @@
 
     var animationController = {
         animation: 0
-    }
+    };
 
     var colladaModel;
 
@@ -256,8 +258,8 @@
 
         var circlesTemp =[];
 
-        var zT = 250;
-        var xT = 250;
+        var zT = 300;
+        var xT = 260;
 
         var material = new THREE.MeshBasicMaterial({
             color: 0x880000,
@@ -278,13 +280,20 @@
         
                 circleTemp.rotation.x = Math.PI / 2;
 
-                circleTemp.name = "hit_circle_" + i ; 
+                circleTemp.name = "hit_circle_" + i ;
+
+                var xCalculated = xT * Math.pow( -1, i );
+
+                console.log( "xCalculated " + i + " : " + xCalculated );
+
+                //hot fix for near the border circles
+                if ( xCalculated > 0 ) xCalculated = 450;
         
                 circleTemp.position.set(
-                    
-                    xT * Math.pow( -1, i ),                 //positive/negative alternating
-                    
-                    -228.4, 
+
+                    xCalculated,                 //positive/negative alternating
+
+                    -228,
                     
                     zT * Math.pow( -1, ( i < 2 ) )          //2 positives then 2 negatives
                     
@@ -309,8 +318,9 @@
 
                 f0.open();
                 */
+        /*
                 var sizeT = animationSegments.length;
-/*
+
                 var f1 = gui.addFolder('Animations');
 
                 f1.add(animationController, "animation", 0.0, sizeT, 1)
@@ -349,7 +359,7 @@
 
         scene2 = new THREE.Scene();
 
-        ambient = new THREE.AmbientLight(0x444444);
+        //ambient = new THREE.AmbientLight(0x444444);
         // scene.add(ambient);
 
         ambient = new THREE.AmbientLight(0x444444);
@@ -749,6 +759,11 @@
 if(playerMove)
         document.addEventListener("click", onDocumentClick, false);
 
+        //new input code
+        input = new Input();
+        input.keyboardInputEvent.subscribe(null, onKeyboardInput);
+        input.mouseInputEvent.subscribe(null, onMouseInput);
+
         //
 
         window.addEventListener('resize', onWindowResize, false);
@@ -769,44 +784,50 @@ if(playerMove)
 
     }
 
+    function ProcessHit() {
+
+        console.log("hitted circle:" + hittedCircle);
+
+
+        if (tweenMovePlayer !== undefined && tweenMovePlayerCount !== 0) {
+
+            tweenMovePlayer.stop();
+            tweenMovePlayerCount--;
+            console.log("tweenMovePlayerCount:" + tweenMovePlayerCount);
+
+        }
+
+        hitting = true;
+
+        playHit();
+
+        hittedCircle = -1;
+
+        animation.timeScale = 2;
+
+    }
     function checkHitCirclesCollision(){
 
         var distanceRadius = 20;
 
-        for ( var i = 0; i < circles.length; i++ ){
+        if ( hittedCircle === -1 ) {
+            for (var i = 0; i < circles.length; i++) {
 
-            var distanceToRedX = Math.abs( circles[i].position.x - circle.position.x );
-            var distanceToRedZ = Math.abs( circles[i].position.z - circle.position.z );
+                var distanceToRedX = Math.abs(circles[i].position.x - circle.position.x);
+                var distanceToRedZ = Math.abs(circles[i].position.z - circle.position.z);
 
-            if ( distanceToRedX < distanceRadius && distanceToRedZ < distanceRadius )
-                hittedCircle = i;
+                if (distanceToRedX < distanceRadius && distanceToRedZ < distanceRadius)
+                    hittedCircle = i;
 
-           // console.log ("i:" + i + " distanceX:" + distanceToRedX + " distanceZ:" + distanceToRedZ);
+                // console.log ("i:" + i + " distanceX:" + distanceToRedX + " distanceZ:" + distanceToRedZ);
 
+            }
         }
 
         if ( hittedCircle !== -1 )
             {
 
-                console.log( "hitted circle:" + hittedCircle );
-
-
-
-                if ( tweenMovePlayer !== undefined && tweenMovePlayerCount !== 0 ) {
-
-                    tweenMovePlayer.stop();
-                    tweenMovePlayerCount--;
-                    console.log("tweenMovePlayerCount:" + tweenMovePlayerCount);
-                
-                }
-
-                hitting = true;
-
-                playHit();
-
-                hittedCircle = -1;
-
-                animation.timeScale = 2;
+                ProcessHit();
 
                 return true;
 
@@ -814,6 +835,39 @@ if(playerMove)
 
             return false;
 
+    }
+
+    function onKeyboardInput(sender, eventArgs)
+    {
+        console.log("Key: " + eventArgs.keyCode + " | Hold: " + eventArgs.holdTime);
+
+        switch ( eventArgs.keyCode ) {
+            case 88:                    //x
+                hittedCircle = 2;
+                break;
+            case 67:                    //c
+                hittedCircle = 0;
+                break;
+            case 86:                    //v
+                hittedCircle = 3;
+                break;
+            case 66:                    //b
+                hittedCircle = 1;
+                break;
+            default:
+                hittedCircle = -1;
+                break;
+
+        }
+
+    if ( hittedCircle !== -1 )
+        checkHitCirclesCollision();
+
+    }
+
+    function onMouseInput(sender, eventArgs)
+    {
+        console.log("Mouse: " + eventArgs.buttonCode + " | Hold: " + eventArgs.holdTime);
     }
 
     function onDocumentClick(event) {
@@ -912,9 +966,9 @@ if(playerMove)
                     override: true
                 }).to({
 
-                    x: Math.min(circle.position.x, 400),
+                    x: Math.min(circle.position.x, 380),
 
-                    z: Math.max(-260, Math.min(circle.position.z, 260))
+                    z: Math.max(-230, Math.min(circle.position.z, 200))
 
                 }, time);
 
