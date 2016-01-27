@@ -16,6 +16,11 @@ Application.prototype.initialize = function()
 
     this.previousMilliseconds = new Date().getTime();
     this.lag = 0.0;
+
+    // Input
+    this.input = new Input();
+    this.input.keyboardInputEvent.subscribe(this, this.onKeyboardInput);
+    this.input.mouseInputEvent.subscribe(this, this.onMouseInput);
 };
 
 Application.prototype.run = function()
@@ -52,4 +57,35 @@ Application.prototype.onResize = function(width, height)
 {
     this.graphics.resizeRenderer(width, height);
     this.scene.onResizeRenderer(width, height);
+};
+
+Application.prototype.onKeyboardInput = function(sender, eventArgs)
+{
+    /*console.log("Key: " + eventArgs.keyCode + " | Hold: " + eventArgs.holdTime);
+
+     switch ( eventArgs.keyCode ) {
+     case 88:                    //x
+     hittedCircle = 2;
+     break;
+     case 67:                    //c
+     hittedCircle = 0;
+     break;
+     case 86:                    //v
+     hittedCircle = 3;
+     break;
+     case 66:                    //b
+     hittedCircle = 1;
+     break;
+     default:
+     hittedCircle = -1;
+     break;
+
+     }
+
+     if ( hittedCircle !== -1 )
+     checkHitCirclesCollision();*/
+};
+Application.prototype.onMouseInput = function(sender, eventArgs)
+{
+    console.log("Mouse: " + eventArgs.buttonCode + " | Hold: " + eventArgs.holdTime);
 };

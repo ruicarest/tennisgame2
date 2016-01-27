@@ -22,6 +22,12 @@ Graphics.prototype.initializeRenderer = function()
 {
     // Create renderer:
     this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.autoClearDepth = false;
+    this.renderer.autoClearColor = false;
+    this.renderer.sortObjects = false;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
     // Set size of renderer element:
     this.resizeRenderer(window.innerWidth, window.innerHeight);
