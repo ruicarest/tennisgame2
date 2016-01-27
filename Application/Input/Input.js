@@ -57,7 +57,7 @@ Input.prototype.Keyboard_onKeyUp = function(sender, eventArgs)
     // Calculate how much time it passed since the key down event was raised:
     var holdTime = Date.now() - keyDownTimestamp;
 
-    // Raise keyboard input event:
+    // Raise keyboard Input event:
     this.keyboardInputEvent.raise(this, new Input.KeyboardEventArgs(keyCode, holdTime));
 };
 
@@ -76,6 +76,6 @@ Input.prototype.Mouse_onButtonUp = function(sender, eventArgs)
     // Calculate how much time it passed since the button down event was raised:
     var holdTime = Date.now() - mouseDownTimestamp;
 
-    // Raise mouse input event:
+    // Raise mouse Input event:
     this.mouseInputEvent.raise(this, new Input.MouseEventArgs(buttonCode, holdTime));
 };

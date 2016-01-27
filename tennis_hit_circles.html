@@ -6,41 +6,36 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
-    body {
-        font-family: Monospace;
-        background-color: #000;
-        color: #fff;
-        margin: 0px;
-        overflow: hidden;
-    }
-    
-    #info {
-        color: #fff;
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        z-index: 100;
-        display: block;
-    }
-    
-    #info a,
-    .button {
-        color: #f00;
-        font-weight: bold;
-        text-decoration: underline;
-        cursor: pointer;
-    }
-    </style>
-</head>
+        body {
+            font-family: Monospace;
+            background-color: #000;
+            color: #fff;
+            margin: 0px;
+            overflow: hidden;
+        }
 
-<body>
-    <div id="info">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r72/three.js"></script> - Tennis court test
-        <div id="loading">Loading...</div>
-    </div>
+        #info {
+            color: #fff;
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            display: block;
+        }
+
+        #info a,
+        .button {
+            color: #f00;
+            font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+
 
     <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r72/three.js"></script>
     <script src="threejs/js/loaders/DDSLoader.js"></script>
     <script src="threejs/js/loaders/MTLLoader.js"></script>
     <script src="threejs/js/loaders/OBJMTLLoader.js"></script>
@@ -49,15 +44,26 @@
     <script src='threejs/js/tween.js'></script>
 
     <!-- Application includes -->
-    <script src="utils/Utils.js"></script>
-    <script src="utils/Set.js"></script>
-    <script src="utils/Event.js"></script>
-    <script src="input/Keyboard.js"></script>
-    <script src="input/Mouse.js"></script>
-    <script src="input/Input.js"></script>
+    <script src="Application/Utils/Utils.js"></script>
+    <script src="Application/Utils/Set.js"></script>
+    <script src="Application/Utils/Event.js"></script>
+    <script src="Application/Input/Keyboard.js"></script>
+    <script src="Application/Input/Mouse.js"></script>
+    <script src="Application/Input/Input.js"></script>
+    <script src="Application/Graphics/Graphics.js"></script>
+    <script src="Application/Graphics/Scene.js"></script>
+    <script src="Application/Application.js"></script>
+    <script src="main.js"></script>
 
+</head>
 
-    <script>
+<body>
+<!--<div id="info">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r72/three.js"></script> - Tennis court test
+    <div id="loading">Loading...</div>
+</div>-->
+
+<script>
 
     var container, stats;
 
@@ -78,7 +84,7 @@
     var elevationCourt = -228.5;
 
     var mouseX = 0,
-        mouseY = 0;
+            mouseY = 0;
 
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
@@ -249,7 +255,7 @@
 
     var colladaModel;
 
-    init();
+    //init();
 
 
     function createHitCircles() {
@@ -275,31 +281,31 @@
         var circleGeometry = new THREE.CircleGeometry(radius, segments);
 
         for ( var i = 0; i < circlesN; i++ ) {
-                
-                circleTemp = new THREE.Mesh(circleGeometry, material);
-        
-                circleTemp.rotation.x = Math.PI / 2;
 
-                circleTemp.name = "hit_circle_" + i ;
+            circleTemp = new THREE.Mesh(circleGeometry, material);
 
-                var xCalculated = xT * Math.pow( -1, i );
+            circleTemp.rotation.x = Math.PI / 2;
 
-                console.log( "xCalculated " + i + " : " + xCalculated );
+            circleTemp.name = "hit_circle_" + i ;
 
-                //hot fix for near the border circles
-                if ( xCalculated > 0 ) xCalculated = 450;
-        
-                circleTemp.position.set(
+            var xCalculated = xT * Math.pow( -1, i );
+
+            console.log( "xCalculated " + i + " : " + xCalculated );
+
+            //hot fix for near the border circles
+            if ( xCalculated > 0 ) xCalculated = 450;
+
+            circleTemp.position.set(
 
                     xCalculated,                 //positive/negative alternating
 
                     -228,
-                    
-                    zT * Math.pow( -1, ( i < 2 ) )          //2 positives then 2 negatives
-                    
-                    );
 
-                circlesTemp.push(circleTemp);
+                    zT * Math.pow( -1, ( i < 2 ) )          //2 positives then 2 negatives
+
+            );
+
+            circlesTemp.push(circleTemp);
         }
 
         return circlesTemp;
@@ -310,27 +316,27 @@
 
 
         /*
-                var f0 = gui.addFolder('Animation Frames');
+         var f0 = gui.addFolder('Animation Frames');
 
-                f0.add(animationTest, "startTime", 0.0, 299.0, 0.0001);
-                f0.add(animationTest, "endTime", 0.0, 300.0, 0.0001);
-                f0.add(animationTest, "manualPose");
+         f0.add(animationTest, "startTime", 0.0, 299.0, 0.0001);
+         f0.add(animationTest, "endTime", 0.0, 300.0, 0.0001);
+         f0.add(animationTest, "manualPose");
 
-                f0.open();
-                */
+         f0.open();
+         */
         /*
-                var sizeT = animationSegments.length;
+         var sizeT = animationSegments.length;
 
-                var f1 = gui.addFolder('Animations');
+         var f1 = gui.addFolder('Animations');
 
-                f1.add(animationController, "animation", 0.0, sizeT, 1)
-                    .onChange(function(newValue) {playAnimation();
-                    });
-          
+         f1.add(animationController, "animation", 0.0, sizeT, 1)
+         .onChange(function(newValue) {playAnimation();
+         });
 
-                f1.open();
 
-                */
+         f1.open();
+
+         */
 
     }
 
@@ -340,7 +346,7 @@
 
 //        initGui();
 
-        
+
 
 
         container = document.createElement('div');
@@ -396,9 +402,9 @@
 
         /*----------------------
 
-      SKYBOX INIT
+         SKYBOX INIT
 
-      ----------------------*/
+         ----------------------*/
 
         var geometry = new THREE.CubeGeometry(10000, 10000, 10000);
         var material = new THREE.MeshPhongMaterial({
@@ -425,7 +431,7 @@
         circle.rotation.x = Math.PI / 2;
 
         circle.position.set(
-            0, -228.4, -5.850006103515625);
+                0, -228.4, -5.850006103515625);
 
         circles = createHitCircles();
 
@@ -514,7 +520,7 @@
 
                     if (child instanceof THREE.Mesh) {
 
-                      //  alert(child.name);
+                        //  alert(child.name);
 
                         child.geometry.computeFaceNormals();
 
@@ -611,9 +617,9 @@
 
                         directionalLight.position.set(
 
-                            directionalLight.position.x + player.position.x * 2,
-                            directionalLight.position.y + player.position.y * 2,
-                            directionalLight.position.z + player.position.z * 2
+                                directionalLight.position.x + player.position.x * 2,
+                                directionalLight.position.y + player.position.y * 2,
+                                directionalLight.position.z + player.position.z * 2
 
                         );
 
@@ -697,7 +703,7 @@
 
             });
 
-        
+
 
 
         });
@@ -756,8 +762,8 @@
         container.appendChild(renderer.domElement);
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
-if(playerMove)
-        document.addEventListener("click", onDocumentClick, false);
+        if(playerMove)
+            document.addEventListener("click", onDocumentClick, false);
 
         //new input code
         input = new Input();
@@ -825,15 +831,15 @@ if(playerMove)
         }
 
         if ( hittedCircle !== -1 )
-            {
+        {
 
-                ProcessHit();
+            ProcessHit();
 
-                return true;
+            return true;
 
-            }
+        }
 
-            return false;
+        return false;
 
     }
 
@@ -860,8 +866,8 @@ if(playerMove)
 
         }
 
-    if ( hittedCircle !== -1 )
-        checkHitCirclesCollision();
+        if ( hittedCircle !== -1 )
+            checkHitCirclesCollision();
 
     }
 
@@ -880,10 +886,10 @@ if(playerMove)
         if ( !clicked || true ) {
 
             if ( hitting )
-                {
-                    return;
-                    hitting = false;
-                }
+            {
+                return;
+                hitting = false;
+            }
 
             if (player.position.x >= circle.position.x) {
 
@@ -925,21 +931,21 @@ if(playerMove)
             // collision focus point
 
             var raycaster2 = new THREE.Raycaster(new THREE.Vector3(circle.position.x, circle.position.y + 10, circle.position.z),
-                new THREE.Vector3(1, 0, 0), 0, 100);
+                    new THREE.Vector3(1, 0, 0), 0, 100);
 
             var intersects = raycaster2.intersectObject(colladaModel);
             if (intersects.length > 0)
                 alert(raycaster2.ray.origin.distanceTo(intersects[0].point));
 
             raycaster2 = new THREE.Raycaster(circle.position,
-                new THREE.Vector3(-1, 0, 0), 0, 100);
+                    new THREE.Vector3(-1, 0, 0), 0, 100);
 
             var intersects = raycaster2.intersectObject(colladaModel);
             if (intersects.length > 0)
                 alert(raycaster2.ray.origin.distanceTo(intersects[0].point));
 
             raycaster2 = new THREE.Raycaster(circle.position,
-                new THREE.Vector3(0, 0, 1), 0, 100);
+                    new THREE.Vector3(0, 0, 1), 0, 100);
 
             var intersects = raycaster2.intersectObject(colladaModel);
             if (intersects.length > 0)
@@ -952,7 +958,7 @@ if(playerMove)
             if ( playerMove ){
 
                 if ( tweenMovePlayer !== undefined && tweenMovePlayerCount > 1 )
-                    {
+                {
 
                     tweenMovePlayer.stop();
                     tweenMovePlayerCount--;
@@ -997,14 +1003,14 @@ if(playerMove)
 
                 tweenMovePlayer.start();
 
-}
+            }
 
-else {
+            else {
 
 
-    playAnimation();
+                playAnimation();
 
-}
+            }
         }
 
     }
@@ -1012,28 +1018,28 @@ else {
     function playHit() {
 
         /*
-        currentAnimation = 4;
+         currentAnimation = 4;
 
-        if (movingUp && movingLeft)
-            currentAnimation = 4;
+         if (movingUp && movingLeft)
+         currentAnimation = 4;
 
-        if (movingUp && !movingLeft)
-            currentAnimation = 5;
+         if (movingUp && !movingLeft)
+         currentAnimation = 5;
 
-        if (!movingUp && !movingLeft)
-            currentAnimation = 6;
-        */
+         if (!movingUp && !movingLeft)
+         currentAnimation = 6;
+         */
         //alert("hit animation: " + currentAnimation );
 
-        if ( hittedCircle === 0 )       //top left 
+        if ( hittedCircle === 0 )       //top left
             currentAnimation = 9;
-        
-        if ( hittedCircle === 1 )       //bottom left 
+
+        if ( hittedCircle === 1 )       //bottom left
             currentAnimation = 5;
-        
+
         if ( hittedCircle === 2 )       //top right
             currentAnimation = 3;
-        
+
         if ( hittedCircle === 3 )       //bottom right
             currentAnimation = 4;
 
@@ -1100,7 +1106,7 @@ else {
                         //alert(circles.length);
 
                         for (var i = 0; i< circles.length; i++)
-                        colladaModel.add(circles[i]);
+                            colladaModel.add(circles[i]);
 
                         lightToAdd = false;
 
@@ -1110,9 +1116,9 @@ else {
                     colladaModel.add(circle);
 
                     circle.position.set(
-                        intersects[i].point.x,
-                        intersects[i].point.y - 227.4,
-                        intersects[i].point.z - 5.850006103515625);
+                            intersects[i].point.x,
+                            intersects[i].point.y - 227.4,
+                            intersects[i].point.z - 5.850006103515625);
 
                 }
 
@@ -1151,7 +1157,7 @@ else {
 
         requestAnimationFrame(animate);
 
- 
+
 
         if (animation !== undefined) {
 
@@ -1159,14 +1165,14 @@ else {
 
             var endTime;
 
-           // console.log("animation current time:" + animation.currentTime);
-          //  console.log(currentAnimation);
+            // console.log("animation current time:" + animation.currentTime);
+            //  console.log(currentAnimation);
             if (!animationTest.manualPose && animationSegments !== undefined) {
 
                 startTime = animationSegments[currentAnimation].t0;
                 endTime = animationSegments[currentAnimation].tn;
 
-            } 
+            }
 
             else {
 
@@ -1176,7 +1182,7 @@ else {
             }
 
             if (animation.currentTime <= startTime ||
-                animation.currentTime > endTime) {
+                    animation.currentTime > endTime) {
 
                 if (hitting && animation.currentTime > endTime) {
 
@@ -1193,7 +1199,7 @@ else {
                 }
 
                 console.log(
-                    animationSegments[currentAnimation].name + " start:" + animationSegments[currentAnimation].t0 + " end: " + animationSegments[currentAnimation].tn);
+                        animationSegments[currentAnimation].name + " start:" + animationSegments[currentAnimation].t0 + " end: " + animationSegments[currentAnimation].tn);
 
                 animation.stop();
 
@@ -1204,7 +1210,7 @@ else {
 
         }
 
-       THREE.AnimationHandler.update(clock.getDelta());
+        THREE.AnimationHandler.update(clock.getDelta());
 
         TWEEN.update(time);
 
@@ -1273,7 +1279,7 @@ else {
 
 
     }
-    </script>
+</script>
 </body>
 
 </html>
