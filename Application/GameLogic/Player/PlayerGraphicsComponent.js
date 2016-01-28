@@ -1,9 +1,9 @@
-function PlayerGraphicsComponent(scene)
+function PlayerGraphicsComponent(id, scene, options)
 {
-    this.initialize(scene);
+    this.initialize(id, scene, options);
 }
 
-PlayerGraphicsComponent.prototype.initialize = function(scene)
+PlayerGraphicsComponent.prototype.initialize = function(id, scene, options)
 {
     this.loaded = false;
 
@@ -11,14 +11,23 @@ PlayerGraphicsComponent.prototype.initialize = function(scene)
     this.load(
         function()
         {
-            component.animation = new THREE.Animation(component.skinnedMesh, component.skinnedMesh.geometry.animation);
+            component.animation = new THREE.Animation(component.mesh, component.mesh.geometry.animation);
 
-            component.skinnedMesh.position = new THREE.Vector3(0.0, 0.0, 0.0);
-            component.skinnedMesh.scale.set(0.01, 0.01, 0.01);
-            component.skinnedMesh.updateMatrix();
-            component.skinnedMesh.updateMatrixWorld(true);
+            component.mesh.position = new THREE.Vector3(0.0, 0.0, 0.0);
+            component.mesh.scale.set(0.01, 0.01, 0.01);
+            component.mesh.updateMatrix();
+            component.mesh.updateMatrixWorld(true);
 
-            scene.add(component.skinnedMesh);
+            scene.add(id, component.skinnedMesh, options ? options.parentId : null);
+
+            if(options)
+            {
+                if(options.position)
+                    component.mesh.position.set(options.position.x, options.position.y, options.position.z);
+
+                if(options.onLoad)
+                    options.onLoad(scene);
+            }
 
             component.loaded = true;
         }
@@ -160,7 +169,7 @@ PlayerGraphicsComponent.prototype.traverse2 = function(collada)
                 child.castShadow = true;
                 child.name = "player1";
 
-                component.skinnedMesh = child;
+                component.mesh = child;
 
                 component.onLoad();
             }

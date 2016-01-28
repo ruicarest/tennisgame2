@@ -55,6 +55,8 @@
     <script src="Application/GameLogic/GameObject.js"></script>
     <script src="Application/GameLogic/Court/CourtGraphicsComponent.js"></script>
     <script src="Application/GameLogic/Court/Court.js"></script>
+    <script src="Application/GameLogic/HitCircle/HitCircleGraphicsComponent.js"></script>
+    <script src="Application/GameLogic/HitCircle/HitCircle.js"></script>
     <script src="Application/GameLogic/Player/PlayerGraphicsComponent.js"></script>
     <script src="Application/GameLogic/Player/Player.js"></script>
     <script src="Application/GameLogic/Racket/RacketGraphicsComponent.js"></script>
@@ -121,7 +123,6 @@
 
     var skybox;
 
-    var gui;
 
     var playerLoad = true;
 
@@ -320,42 +321,7 @@
 
     }
 
-    function initGui() {
-
-
-        /*
-         var f0 = gui.addFolder('Animation Frames');
-
-         f0.add(animationTest, "startTime", 0.0, 299.0, 0.0001);
-         f0.add(animationTest, "endTime", 0.0, 300.0, 0.0001);
-         f0.add(animationTest, "manualPose");
-
-         f0.open();
-         */
-        /*
-         var sizeT = animationSegments.length;
-
-         var f1 = gui.addFolder('Animations');
-
-         f1.add(animationController, "animation", 0.0, sizeT, 1)
-         .onChange(function(newValue) {playAnimation();
-         });
-
-
-         f1.open();
-
-         */
-
-    }
-
     function init() {
-
-        gui = new dat.GUI();
-
-//        initGui();
-
-
-
 
         container = document.createElement('div');
         document.body.appendChild(container);
@@ -390,19 +356,6 @@
         directionalLight.castShadow = true;
 
         // model
-
-        var onProgress = function(xhr) {
-            if (xhr.lengthComputable) {
-                var percentComplete = xhr.loaded / xhr.total * 100;
-                console.log(Math.round(percentComplete, 2) + '% downloaded');
-            }
-        };
-
-        var onError = function(xhr) {};
-
-
-
-
         THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
 
 
@@ -1157,15 +1110,11 @@
 
     }
 
-    //
-
     function animate(time) {
 
         checkRacketAttached();
 
         requestAnimationFrame(animate);
-
-
 
         if (animation !== undefined) {
 
@@ -1223,69 +1172,12 @@
         TWEEN.update(time);
 
         render();
-
     }
 
-    function render() {
-
-        //camera.position.x += (mouseX - camera.position.x) * .05;
-        //camera.position.y += 2.0 + (-mouseY - camera.position.y) * .05;
-
-        //camera.lookAt(scene.position);
-
-        if (colladaModel !== undefined) {
-
-            //  colladaModel.position.y = -20000;
-
-            //camera.position.y = -20000;
-
-            //camera.lookAt(colladaModel.position);
-
-            //camera.lookAt(circle.position);
-
-        }
+    function render()
+    {
         renderer.clear();
         renderer.render(scene, camera);
-
-        if (player !== undefined) {
-
-
-            // colorWriteSet(player,true);
-            // colorWriteSet(circle,true);
-            //renderer.render(circle, camera);
-            // renderer.render(player, camera);
-            //colorWriteSet(player,false);
-            //colorWriteSet(circle,false);
-
-
-
-
-
-        }
-
-        //renderer.clearDepth();
-        //renderer.render(scene2, camera);
-
-    }
-
-    var colorWriteSet = function(object, value) {
-
-        object.traverse(function(child) {
-
-            if (child instanceof THREE.SkinnedMesh || child instanceof THREE.Mesh) {
-
-                if (child.material.materials !== undefined)
-                    for (var i = 0; i < child.material.materials.length; i++) {
-
-                        child.material.materials[i].colorWrite = value;
-                    } else
-                    child.material.colorWrite = value;
-
-            }
-        });
-
-
-
     }
 </script>
 </body>

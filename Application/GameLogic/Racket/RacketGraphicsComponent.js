@@ -1,9 +1,9 @@
-function RacketGraphicsComponent(scene)
+function RacketGraphicsComponent(id, scene, options)
 {
-    this.initialize(scene);
+    this.initialize(id, scene, options);
 }
 
-RacketGraphicsComponent.prototype.initialize = function(scene)
+RacketGraphicsComponent.prototype.initialize = function(id, scene, options)
 {
     var component = this;
     this.loaded = false;
@@ -13,7 +13,16 @@ RacketGraphicsComponent.prototype.initialize = function(scene)
             component.mesh.geometry.center();
             component.mesh.geometry.scale(0.01, 0.01, 0.01);
 
-            scene.add(component.mesh);
+            scene.add(id, component.mesh, options ? options.parentId : null);
+
+            if(options)
+            {
+                if(options.position)
+                    component.mesh.position.set(options.position.x, options.position.y, options.position.z);
+
+                if(options.onLoad)
+                    options.onLoad(scene);
+            }
         }
     )
 };

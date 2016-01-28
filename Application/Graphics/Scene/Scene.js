@@ -10,6 +10,8 @@ Scene.prototype.initialize = function()
     // Create THREE scene:
     this.scene = new THREE.Scene();
 
+    this.meshes = {};
+
     // Initialize cameras:
     this.initializeCameras();
 
@@ -22,9 +24,14 @@ Scene.prototype.render = function(graphics)
     graphics.render(this.scene, this.mainCamera);
 };
 
-Scene.prototype.add = function(object)
+Scene.prototype.add = function(id, object, parentId)
 {
-    this.scene.add(object);
+    this.meshes[id] = object;
+
+    if(!parentId)
+        this.scene.add(object);
+    else
+        this.meshes[parentId].add(object);
 };
 
 Scene.prototype.onResizeRenderer = function(width, height)

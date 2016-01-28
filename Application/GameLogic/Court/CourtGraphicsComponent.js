@@ -1,24 +1,33 @@
-function CourtGraphicsComponent(scene)
+function CourtGraphicsComponent(id, scene, options)
 {
-    this.initialize(scene);
+    this.initialize(id, scene, options);
 }
 
-CourtGraphicsComponent.prototype.initialize = function(scene)
+CourtGraphicsComponent.prototype.initialize = function(id, scene, options)
 {
-    var model = this;
+    var component = this;
     this.loaded = false;
     this.load(
         function()
         {
-            model.mesh.rotateOnAxis(new THREE.Vector3(0.0, 1.0, 0.0), THREE.Math.degToRad(359.5));
-            model.mesh.rotateOnAxis(new THREE.Vector3(0.0, 1.0, 0.0), THREE.Math.degToRad(90));
-            model.mesh.scale.set(0.01, 0.01, 0.01);
-            model.mesh.updateMatrix();
-            model.mesh.updateMatrixWorld(true);
+            component.mesh.rotateOnAxis(new THREE.Vector3(0.0, 1.0, 0.0), THREE.Math.degToRad(359.5));
+            component.mesh.rotateOnAxis(new THREE.Vector3(0.0, 1.0, 0.0), THREE.Math.degToRad(90));
+            component.mesh.scale.set(0.01, 0.01, 0.01);
+            component.mesh.updateMatrix();
+            component.mesh.updateMatrixWorld(true);
 
-            scene.add(model.mesh);
+            scene.add(id, component.mesh, options ? options.parentId : null);
 
-            model.loaded = true;
+            if(options)
+            {
+                if(options.position)
+                    component.mesh.position.set(options.position.x, options.position.y, options.position.z);
+
+                if(options.onLoad)
+                    options.onLoad(scene);
+            }
+
+            component.loaded = true;
         }
     );
 };
