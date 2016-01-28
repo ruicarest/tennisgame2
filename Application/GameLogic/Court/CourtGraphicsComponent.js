@@ -74,11 +74,11 @@ CourtGraphicsComponent.prototype.load = function(onLoad)
                         console.log(child);
 
                         component.mesh = child;
-
-                        onLoad();
                     }
                 }
             );
+
+            onLoad();
         }
     );
 };

@@ -72,6 +72,8 @@ PlayerGraphicsComponent.prototype.load = function(onLoad)
         {
             component.traverse(collada);
             component.traverse2(collada);
+
+            component.onLoad();
         }
     );
 };
@@ -170,8 +172,6 @@ PlayerGraphicsComponent.prototype.traverse2 = function(collada)
                 child.name = "player1";
 
                 component.mesh = child;
-
-                component.onLoad();
             }
         }
     );
