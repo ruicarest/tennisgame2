@@ -1,10 +1,35 @@
-function CourtLoader()
+function CourtGraphicsComponent(scene)
 {
+    this.initialize(scene);
 }
 
-CourtLoader.prototype.load = function(onLoad)
+CourtGraphicsComponent.prototype.initialize = function(scene)
 {
-    var courtLoader = this;
+    var model = this;
+    this.loaded = false;
+    this.load(
+        function()
+        {
+            model.mesh.rotateOnAxis(new THREE.Vector3(0.0, 1.0, 0.0), THREE.Math.degToRad(359.5));
+            model.mesh.rotateOnAxis(new THREE.Vector3(0.0, 1.0, 0.0), THREE.Math.degToRad(90));
+            model.mesh.scale.set(0.01, 0.01, 0.01);
+            model.mesh.updateMatrix();
+            model.mesh.updateMatrixWorld(true);
+
+            scene.add(model.mesh);
+
+            model.loaded = true;
+        }
+    );
+};
+
+CourtGraphicsComponent.prototype.update = function()
+{
+};
+
+CourtGraphicsComponent.prototype.load = function(onLoad)
+{
+    var component = this;
     var loader = new THREE.ColladaLoader();
     loader.load(
         'squash/court2.DAE',
@@ -35,10 +60,11 @@ CourtLoader.prototype.load = function(onLoad)
 
                         child.receiveShadow = true;
                         child.name = "court";
-                        courtLoader.mesh = child;
 
                         console.log("colladaModel:");
                         console.log(child);
+
+                        component.mesh = child;
 
                         onLoad();
                     }

@@ -1,18 +1,15 @@
 function Application()
 {
+    this.initialize();
 }
 
 Application.MILLISECONDS_PER_UPDATE = 12;
 
 Application.prototype.initialize = function()
 {
-    // Initialize graphics object:
-    this.graphics = new Graphics();
-    this.graphics.initialize();
-
     // Initialize scene:
+    this.graphics = new Graphics();
     this.scene = new Scene();
-    this.scene.initialize();
 
     this.previousMilliseconds = new Date().getTime();
     this.lag = 0.0;
@@ -21,6 +18,8 @@ Application.prototype.initialize = function()
     this.input = new Input();
     this.input.keyboardInputEvent.subscribe(this, this.onKeyboardInput);
     this.input.mouseInputEvent.subscribe(this, this.onMouseInput);
+
+    this.gameManager = new GameManager(this.scene);
 };
 
 Application.prototype.run = function()
@@ -49,8 +48,8 @@ Application.prototype.render = function()
 
 Application.prototype.update = function()
 {
-    // Update scene:
-    this.scene.update();
+    // Update game objects:
+    this.gameManager.update();
 };
 
 Application.prototype.onResize = function(width, height)

@@ -1,5 +1,6 @@
 function Graphics()
 {
+    this.initialize();
 }
 
 Graphics.prototype.initialize = function()

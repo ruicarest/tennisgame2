@@ -1,5 +1,6 @@
-function GameObject()
+function GameObject(graphics, physics)
 {
+    this.initialize(graphics, physics);
 }
 
 GameObject.prototype.initialize = function(graphics, physics)

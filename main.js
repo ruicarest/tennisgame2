@@ -2,9 +2,8 @@ var application;
 
 window.onload = function initialize()
 {
-    // Initialize Application:
+    // Create Application:
     application = new Application();
-    application.initialize();
 
     setupEvents();
 
