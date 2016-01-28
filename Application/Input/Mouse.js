@@ -40,8 +40,8 @@ Mouse.prototype.initialize = function()
 
 Mouse.prototype.onMove = function(positionX, positionY)
 {
-    this.position[0] = positionX;
-    this.position[1] = positionY;
+    this.position[0] = (positionX / window.innerWidth) * 2.0 - 1.0;
+    this.position[1] = (positionY / window.innerHeight) * 2.0 - 1.0;
 };
 Mouse.prototype.onWheel = function(deltaWheel)
 {

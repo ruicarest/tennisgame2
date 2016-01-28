@@ -5,6 +5,7 @@ function GameManager(scene)
 
 GameManager.prototype.initialize = function(scene)
 {
+    this.raycaster = new Raycaster(scene);
     this.initializeGameObjects(scene);
 };
 
@@ -12,6 +13,13 @@ GameManager.prototype.update = function()
 {
     for(var i = 0; i < this.gameObjects.size(); i++)
         this.gameObjects.get(i).update();
+};
+GameManager.prototype.processInput = function(input)
+{
+    var mouse = input.mouse;
+
+    this.raycaster.setMousePosition(new THREE.Vector2(mouse.position[0], mouse.position[1]));
+    // TODO check intersections
 };
 
 GameManager.prototype.initializeGameObjects = function(scene)

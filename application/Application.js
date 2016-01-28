@@ -29,6 +29,8 @@ Application.prototype.run = function()
     this.previousMilliseconds = currentMilliseconds;
     this.lag += elapsedMilliseconds;
 
+    this.processInput();
+
     while(this.lag >= Application.MILLISECONDS_PER_UPDATE)
     {
         // Update:
@@ -45,11 +47,14 @@ Application.prototype.render = function()
     // Render scene:
     this.scene.render(this.graphics);
 };
-
 Application.prototype.update = function()
 {
     // Update game objects:
     this.gameManager.update();
+};
+Application.prototype.processInput = function()
+{
+    this.gameManager.processInput(this.input);
 };
 
 Application.prototype.onResize = function(width, height)

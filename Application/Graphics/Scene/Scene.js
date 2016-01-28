@@ -34,6 +34,11 @@ Scene.prototype.add = function(id, object, parentId)
         this.meshes[parentId].add(object);
 };
 
+Scene.prototype.getCurrentCamera = function()
+{
+    return this.mainCamera;
+};
+
 Scene.prototype.onResizeRenderer = function(width, height)
 {
     this.mainCamera.aspect = width / height;
