@@ -5,7 +5,9 @@ function HitCircleGraphicsComponent(id, scene, options)
 
 HitCircleGraphicsComponent.prototype.initialize = function(id, scene, options)
 {
-    this.loaded = false;
+    this.loaded = new Utils.Event();
+    if(options && options.subscriber && options.handler)
+        this.loaded.subscribe(options.subscriber, options.handler);
 
     var material = new THREE.MeshBasicMaterial({
         color: 0x880000,
@@ -23,16 +25,10 @@ HitCircleGraphicsComponent.prototype.initialize = function(id, scene, options)
     this.mesh.rotation.x = Math.PI / 2;
     scene.add(id, this.mesh, options ? options.parentId : null);
 
-    if(options)
-    {
-        if(options.position)
-            this.mesh.position.set(options.position.x, options.position.y, options.position.z);
+    if(options && options.position)
+        this.mesh.position.set(options.position.x, options.position.y, options.position.z);
 
-        if(options.onLoad)
-            options.onLoad(scene);
-    }
-
-    this.loaded = true;
+    this.loaded.raise(this, null);
 };
 
 HitCircleGraphicsComponent.prototype.update = function()

@@ -4,10 +4,10 @@ window.onload = function initialize()
 {
     // Create Application:
     application = new Application();
+    application.initialized.subscribe(null, run);
+    application.initialize();
 
     setupEvents();
-
-    run();
 };
 
 function run()

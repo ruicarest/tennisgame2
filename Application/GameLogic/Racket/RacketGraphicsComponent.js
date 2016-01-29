@@ -5,8 +5,11 @@ function RacketGraphicsComponent(id, scene, options)
 
 RacketGraphicsComponent.prototype.initialize = function(id, scene, options)
 {
+    this.loaded = new Utils.Event();
+    if(options && options.subscriber && options.handler)
+        this.loaded.subscribe(options.subscriber, options.handler);
+
     var component = this;
-    this.loaded = false;
     this.load(
         function()
         {
@@ -15,14 +18,10 @@ RacketGraphicsComponent.prototype.initialize = function(id, scene, options)
 
             scene.add(id, component.mesh, options ? options.parentId : null);
 
-            if(options)
-            {
-                if(options.position)
-                    component.mesh.position.set(options.position.x, options.position.y, options.position.z);
+            if(options && options.position)
+                component.mesh.position.set(options.position.x, options.position.y, options.position.z);
 
-                if(options.onLoad)
-                    options.onLoad(scene);
-            }
+            component.loaded.raise(component, null);
         }
     )
 };

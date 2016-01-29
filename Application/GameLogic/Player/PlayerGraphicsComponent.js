@@ -5,7 +5,9 @@ function PlayerGraphicsComponent(id, scene, options)
 
 PlayerGraphicsComponent.prototype.initialize = function(id, scene, options)
 {
-    this.loaded = false;
+    this.loaded = new Utils.Event();
+    if(options && options.subscriber && options.handler)
+        this.loaded.subscribe(options.subscriber, options.handler);
 
     var component = this;
     this.load(
@@ -20,16 +22,10 @@ PlayerGraphicsComponent.prototype.initialize = function(id, scene, options)
 
             scene.add(id, component.skinnedMesh, options ? options.parentId : null);
 
-            if(options)
-            {
-                if(options.position)
-                    component.mesh.position.set(options.position.x, options.position.y, options.position.z);
+            if(options && options.position)
+                component.mesh.position.set(options.position.x, options.position.y, options.position.z);
 
-                if(options.onLoad)
-                    options.onLoad(scene);
-            }
-
-            component.loaded = true;
+            component.loaded.raise(component, null);
         }
     );
 

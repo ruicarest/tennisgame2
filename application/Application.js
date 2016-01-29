@@ -1,6 +1,6 @@
 function Application()
 {
-    this.initialize();
+    this.initialized = new Utils.Event();
 }
 
 Application.MILLISECONDS_PER_UPDATE = 12;
@@ -19,7 +19,9 @@ Application.prototype.initialize = function()
     this.input.keyboardInputEvent.subscribe(this, this.onKeyboardInput);
     this.input.mouseInputEvent.subscribe(this, this.onMouseInput);
 
-    this.gameManager = new GameManager(this.scene);
+    this.gameManager = new GameManager();
+    this.gameManager.initialized.subscribe(this, this.onInitialized);
+    this.gameManager.initialize(this.scene);
 };
 
 Application.prototype.run = function()
@@ -92,4 +94,9 @@ Application.prototype.onKeyboardInput = function(sender, eventArgs)
 Application.prototype.onMouseInput = function(sender, eventArgs)
 {
     console.log("Mouse: " + eventArgs.buttonCode + " | Hold: " + eventArgs.holdTime);
+};
+
+Application.prototype.onInitialized = function(sender, eventArgs)
+{
+    this.initialized.raise(this, eventArgs);
 };

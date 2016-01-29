@@ -11,7 +11,7 @@ Raycaster.prototype.initialize = function(scene)
 
 Raycaster.prototype.setMousePosition = function(coordinates)
 {
-    this.raycaster.setFromCamera(coordinates, this.scene);
+    this.raycaster.setFromCamera(coordinates, this.scene.getCurrentCamera());
 };
 
 Raycaster.prototype.intersectObject = function(object, recursive)
