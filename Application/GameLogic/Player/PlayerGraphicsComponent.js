@@ -15,10 +15,11 @@ PlayerGraphicsComponent.prototype.initialize = function(id, scene, options)
         {
             component.animation = new THREE.Animation(component.mesh, component.mesh.geometry.animation);
 
-            component.mesh.geometry.scale(0.01, 0.01, 0.01);
-            component.mesh.geometry.center();
-
-            scene.add(id, component.skinnedMesh, options ? options.parentId : null);
+            component.mesh.scale.set(0.01, 0.01, 0.01);
+            component.mesh.translate(2.30, new THREE.Vector3(0, -1, 0));
+            component.mesh.add(new THREE.AmbientLight(0x555555));
+            component.mesh.rotateY(THREE.Math.degToRad(90));
+            scene.add(id, component.mesh, options ? options.parentId : null);
 
             if(options && options.position)
                 component.mesh.position.set(options.position.x, options.position.y, options.position.z);
