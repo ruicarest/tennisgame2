@@ -15,10 +15,8 @@ PlayerGraphicsComponent.prototype.initialize = function(id, scene, options)
         {
             component.animation = new THREE.Animation(component.mesh, component.mesh.geometry.animation);
 
-            component.mesh.position = new THREE.Vector3(0.0, 0.0, 0.0);
-            component.mesh.scale.set(0.01, 0.01, 0.01);
-            component.mesh.updateMatrix();
-            component.mesh.updateMatrixWorld(true);
+            component.mesh.geometry.scale(0.01, 0.01, 0.01);
+            component.mesh.geometry.center();
 
             scene.add(id, component.skinnedMesh, options ? options.parentId : null);
 

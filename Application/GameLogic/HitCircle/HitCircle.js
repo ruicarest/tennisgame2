@@ -2,9 +2,12 @@ function HitCircle()
 {
 }
 
-HitCircle.create = function(id, scene, parentId, position)
+HitCircle.create = function(id, scene, options)
 {
-    var graphics = new HitCircleGraphicsComponent(id, scene, parentId, position);
-    var physics = null;
-    return new GameObject(graphics, physics);
+    return new GameObject(
+        {
+            graphics: new HitCircleGraphicsComponent(id, scene, options),
+            collider: new HitCircleColliderComponent()
+        }
+    );
 };

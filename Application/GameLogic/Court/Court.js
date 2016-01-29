@@ -2,9 +2,11 @@ function Court()
 {
 }
 
-Court.create = function(id, scene, parentId)
+Court.create = function(id, scene, options)
 {
-    var graphics = new CourtGraphicsComponent(id, scene, parentId);
-    var physics = null;
-    return new GameObject(graphics, physics);
+    return new GameObject(
+        {
+            graphics: new CourtGraphicsComponent(id, scene, options)
+        }
+    );
 };

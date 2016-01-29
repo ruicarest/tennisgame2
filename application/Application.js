@@ -94,6 +94,8 @@ Application.prototype.onKeyboardInput = function(sender, eventArgs)
 Application.prototype.onMouseInput = function(sender, eventArgs)
 {
     console.log("Mouse: " + eventArgs.buttonCode + " | Hold: " + eventArgs.holdTime);
+
+    this.gameManager.onMouseInput(eventArgs.buttonCode, eventArgs.holdTime);
 };
 
 Application.prototype.onInitialized = function(sender, eventArgs)

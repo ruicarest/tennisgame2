@@ -2,9 +2,11 @@ function Racket()
 {
 }
 
-Racket.create = function(id, scene, parentId)
+Racket.create = function(id, scene, options)
 {
-    var graphics = new RacketGraphicsComponent(id, scene, parentId);
-    var physics = null;
-    return new GameObject(graphics, physics);
+    return new GameObject(
+        {
+            graphics: new RacketGraphicsComponent(id, scene, options)
+        }
+    );
 };

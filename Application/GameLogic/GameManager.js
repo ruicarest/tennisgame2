@@ -25,14 +25,12 @@ GameManager.prototype.update = function()
 };
 GameManager.prototype.processInput = function(input)
 {
-
-
     var mouse = input.mouse;
 
     // Set raycaster origin:
     this.raycaster.setMousePosition(new THREE.Vector2(mouse.position[0], mouse.position[1]));
 
-    // TODO test this
+    // Positioning the mouse cursor:
     var court = this.gameObjects.get("Court").graphics.mesh;
     var intersections = this.raycaster.intersectObject(court, false);
     if (intersections.length > 0)
@@ -45,19 +43,37 @@ GameManager.prototype.processInput = function(input)
 
             if (intersections[i].object.name.indexOf(court.name) > -1 && (intersections[i].faceIndex === 14 || intersections[i].faceIndex === 15 || intersections[i].faceIndex === 13))
             {
-                this.gameObjects.get("MousePointer").graphics.mesh.position.set(intersections[i].point.x, intersections[i].point.y, intersections[i].point.z);
+                var position = this.gameObjects.get("MousePointer").graphics.mesh.position;
+                position.set(intersections[i].point.x, intersections[i].point.y + 0.1, -intersections[i].point.z);
+                console.log("x: " + position.x + "y: " + position.y + "z: " + position.z);
                 break;
             }
         }
     }
-
-    if(mouse.isButtonDown(0))
+};
+GameManager.prototype.onMouseInput = function(buttonCode, holdTime)
+{
+    var mousePointer = this.gameObjects.get("MousePointer");
+    if(ColliderManager.checkCollision(mousePointer, this.gameObjects.get("HitCircle0")))
     {
-        // If intersection with the hit circles
-        //      Swing racket
-        // Else if intersection with the floor
-        //      Move player
+        // TODO
+        console.log("Hit 0!");
     }
+    else if(ColliderManager.checkCollision(mousePointer, this.gameObjects.get("HitCircle1")))
+    {
+        console.log("Hit 1!");
+    }
+    else if(ColliderManager.checkCollision(mousePointer, this.gameObjects.get("HitCircle2")))
+    {
+        console.log("Hit 2!");
+    }
+    else if(ColliderManager.checkCollision(mousePointer, this.gameObjects.get("HitCircle3")))
+    {
+        console.log("Hit 3!");
+    }
+
+    // Else if intersection with the floor
+    //      Move player
 };
 
 GameManager.prototype.initializeGameObjects = function(scene)

@@ -13,11 +13,9 @@ CourtGraphicsComponent.prototype.initialize = function(id, scene, options)
     this.load(
         function()
         {
-            component.mesh.rotateOnAxis(new THREE.Vector3(0.0, 1.0, 0.0), THREE.Math.degToRad(359.5));
-            component.mesh.rotateOnAxis(new THREE.Vector3(0.0, 1.0, 0.0), THREE.Math.degToRad(90));
-            component.mesh.scale.set(0.01, 0.01, 0.01);
-            component.mesh.updateMatrix();
-            component.mesh.updateMatrixWorld(true);
+            component.mesh.geometry.scale(0.01, 0.01, 0.01);
+            component.mesh.geometry.rotateY(THREE.Math.degToRad(359.5));
+            component.mesh.geometry.rotateY(THREE.Math.degToRad(90));
 
             scene.add(id, component.mesh, options ? options.parentId : null);
 

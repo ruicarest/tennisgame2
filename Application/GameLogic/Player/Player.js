@@ -2,9 +2,11 @@ function Player()
 {
 }
 
-Player.create = function(id, scene, parentId)
+Player.create = function(id, scene, options)
 {
-    var graphics = new PlayerGraphicsComponent(id, scene, parentId);
-    var physics = null;
-    return new GameObject(graphics, physics);
+    return new GameObject(
+        {
+            graphics: new PlayerGraphicsComponent(id, scene, options)
+        }
+    );
 };
