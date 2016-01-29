@@ -44,8 +44,7 @@ GameManager.prototype.processInput = function(input)
             if (intersections[i].object.name.indexOf(court.name) > -1 && (intersections[i].faceIndex === 14 || intersections[i].faceIndex === 15 || intersections[i].faceIndex === 13))
             {
                 var position = this.gameObjects.get("MousePointer").graphics.mesh.position;
-                position.set(intersections[i].point.x, intersections[i].point.y + 0.1, -intersections[i].point.z);
-                console.log("x: " + position.x + "y: " + position.y + "z: " + position.z);
+                position.set(intersections[i].point.x, intersections[i].point.y + 0.01, intersections[i].point.z);
                 break;
             }
         }
