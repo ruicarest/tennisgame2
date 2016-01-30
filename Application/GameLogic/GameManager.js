@@ -28,7 +28,7 @@ GameManager.prototype.update = function()
 };
 GameManager.prototype.processInput = function(input)
 {
-    var mouse = input.mouse;
+    /*var mouse = input.mouse;
 
     // Set raycaster origin:
     this.raycaster.setMousePosition(new THREE.Vector2(mouse.position[0], mouse.position[1]));
@@ -51,7 +51,7 @@ GameManager.prototype.processInput = function(input)
                 break;
             }
         }
-    }
+    }*/
 };
 GameManager.prototype.onMouseInput = function(buttonCode, holdTime)
 {
@@ -82,10 +82,7 @@ GameManager.prototype.initializeGameObjects = function(scene)
 {
     this.gameObjects = new Utils.Map();
 
-    this.gameObjects.set("Court", Court.create("Court", scene, { subscriber: this, handler: this.onGameObjectLoaded }));
-};
-GameManager.prototype.initializeHitCircles = function(scene)
-{
+    //this.gameObjects.set("Court", Court.create("Court", scene, { subscriber: this, handler: this.onGameObjectLoaded }));
     this.gameObjects.set("Player", Player.create("Player", scene, { subscriber: this, handler: this.onGameObjectLoaded }));
     this.gameObjects.set("Racket", Racket.create("Racket", scene, { subscriber: this, handler: this.onGameObjectLoaded }));
     this.gameObjects.set("HitCircle0", HitCircle.create("HitCircle0", scene, { position: new THREE.Vector3(-2.9, -2.28, -4.4), subscriber: this, handler: this.onGameObjectLoaded }));
@@ -94,11 +91,16 @@ GameManager.prototype.initializeHitCircles = function(scene)
     this.gameObjects.set("HitCircle3", HitCircle.create("HitCircle3", scene, { position: new THREE.Vector3(2.9, -2.28, 2.7), subscriber: this, handler: this.onGameObjectLoaded }));
     this.gameObjects.set("MousePointer", HitCircle.create("MousePointer", scene, { position : new THREE.Vector3(0.0, 0.0, 0.0), subscriber: this, handler: this.onGameObjectLoaded }));
 };
+GameManager.prototype.resolveDependencies = function()
+{
+    var racketMesh = this.gameObjects.get("Racket").graphics.mesh;
+    this.gameObjects.get("Player").graphics.addToRightHand(racketMesh);
+};
 GameManager.prototype.onGameObjectLoaded = function(sender, handler)
 {
-    if(sender === this.gameObjects.get("Court").graphics)
-        this.initializeHitCircles(this.scene);
-
     if(++this.loadedObjectCount === this.gameObjects.size())
+    {
+        //this.resolveDependencies();
         this.initialized.raise(this, null);
+    }
 };

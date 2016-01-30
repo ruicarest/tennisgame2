@@ -15,8 +15,18 @@ PlayerGraphicsComponent.prototype.initialize = function(id, scene, options)
         {
             component.animation = new THREE.Animation(component.mesh, component.mesh.geometry.animation);
 
-            component.mesh.scale.set(0.01, 0.01, 0.01);
-            component.mesh.translate(2.30, new THREE.Vector3(0, -1, 0));
+
+            /*var mesh = component.mesh;
+
+            for(var i = 0; i < mesh.bones.length; i++)
+            {
+                var bone = mesh.bones[i];
+                bone.
+            }*/
+
+
+            //component.mesh.scale.set(0.01, 0.01, 0.01);
+            //component.mesh.translate(2.30, new THREE.Vector3(0, -1, 0));
             component.mesh.add(new THREE.AmbientLight(0x555555));
             component.mesh.rotateY(THREE.Math.degToRad(90));
             scene.add(id, component.mesh, options ? options.parentId : null);
@@ -55,6 +65,14 @@ PlayerGraphicsComponent.prototype.update = function()
 {
 };
 
+PlayerGraphicsComponent.prototype.addToRightHand = function(mesh)
+{
+    this.handBoneRight.add(mesh);
+    mesh.geometry.center();
+    mesh.rotation.z = 0;
+    mesh.position.set(0, 0, 0);
+};
+
 PlayerGraphicsComponent.prototype.load = function(onLoad)
 {
     this.onLoad = onLoad;
@@ -62,7 +80,7 @@ PlayerGraphicsComponent.prototype.load = function(onLoad)
     var component = this;
     var loader = new THREE.ColladaLoader();
     loader.load(
-        "./squash/player/wip2.dae",
+        "./squash/player/player3.dae",
         function(collada)
         {
             component.traverse(collada);
