@@ -55,9 +55,15 @@
     <script src="input/Keyboard.js"></script>
     <script src="input/Mouse.js"></script>
     <script src="input/Input.js"></script>
+    <script type="text/javascript" src="physi/physi.js"></script>
 
 
     <script>
+
+    Physijs.scripts.worker = 'physijs_worker.js';
+    Physijs.scripts.ammo = 'js/ammo.js';
+
+    var box;
 
     var container, stats;
 
@@ -355,7 +361,7 @@
 
         // scene
 
-        scene = new THREE.Scene();
+        scene = new Physijs.Scene();
 
         scene2 = new THREE.Scene();
 
@@ -682,6 +688,14 @@
                     colladaModel.name = "court";
 
                     scene.add(colladaModel);
+
+                    camera.lookAt(colladaModel.position);
+
+                    box = new Physijs.BoxMesh(
+                            new THREE.CubeGeometry( 5, 5, 5 ),
+                            new THREE.MeshBasicMaterial({ color: 0x888888 })
+                    );
+                    scene.add( box );
 
 
 
@@ -1197,8 +1211,6 @@ else {
 
                 animation.stop();
 
-
-
                 animation.play(startTime); // play the animation not looped, from t0
             }
 
@@ -1230,6 +1242,7 @@ else {
             //camera.lookAt(circle.position);
 
         }
+        scene.simulate(); // run physics
         renderer.clear();
         renderer.render(scene, camera);
 
