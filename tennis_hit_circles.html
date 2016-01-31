@@ -60,10 +60,12 @@
 
     <script>
 
-    Physijs.scripts.worker = 'physijs_worker.js';
+    Physijs.scripts.worker = 'physi/physijs_worker.js';
     Physijs.scripts.ammo = 'js/ammo.js';
 
     var box;
+    var ground;
+    var capsule;
 
     var container, stats;
 
@@ -361,7 +363,8 @@
 
         // scene
 
-        scene = new Physijs.Scene();
+        scene = new Physijs.Scene({ fixedTimeStep: 1 / 120 });
+        scene.setGravity(new THREE.Vector3( 0, -980, 0 ));
 
         scene2 = new THREE.Scene();
 
@@ -600,6 +603,34 @@
                             scene.add(player);
                         else
                             scene.add(player);
+
+                        //capsule physics
+
+                        var merged = new THREE.Geometry();
+                        var cyl = new THREE.CylinderGeometry(50, 50, 200);
+                        var top = new THREE.SphereGeometry(50);
+                        var bot = new THREE.SphereGeometry(50);
+                        var matrix = new THREE.Matrix4();
+                        matrix.makeTranslation(0, 100, 0);
+                        top.applyMatrix(matrix);
+                        var matrix = new THREE.Matrix4();
+                        matrix.makeTranslation(0, -100, 0);
+                        bot.applyMatrix(matrix);
+                        // merge to create a capsule
+                        merged.merge(top);
+                        merged.merge(bot);
+                        merged.merge(cyl);
+                        // create a physijs capsule mesh
+                        capsule = new Physijs.CapsuleMesh(
+                                merged,
+                                Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0xffce00,transparent:true, opacity:0.2}), 0, 0.6),
+                                0
+                        );
+                        capsule.position.y = 70;
+
+                        //setPosAndShade(capsule);
+                        scene.add(capsule);
+
                         helper = new THREE.BoundingBoxHelper(player, 0xff0000);
                         helper.update();
                         helper.rotation.y = Math.PI / 2;
@@ -634,6 +665,17 @@
 
             });
 
+        }
+
+        function getMaterial() {
+            var material = Physijs.createMaterial(
+                    new THREE.MeshLambertMaterial(
+                            {
+                                color: Math.random().hex(),
+//                                opacity: 0.8,
+//                                transparent: true
+                            }), 0.5, 0.7);
+            return material;
         }
 
 
@@ -691,11 +733,111 @@
 
                     camera.lookAt(colladaModel.position);
 
-                    box = new Physijs.BoxMesh(
-                            new THREE.CubeGeometry( 5, 5, 5 ),
-                            new THREE.MeshBasicMaterial({ color: 0x888888 })
+                    //floor
+                    ground = new Physijs.PlaneMesh(
+                            new THREE.PlaneGeometry(1500, 1000),
+                            Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0x00ffff, side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.5}), 0, 1),
+                            0,
+                            0.3
                     );
+                    ground.position.set(
+                            0,
+                            1,
+                            0
+                    );
+                    ground.rotation.x = (Math.PI / 2) * 3;
+                    scene.add(ground);
+
+                    //front
+                    ground = new Physijs.PlaneMesh(
+                            new THREE.PlaneGeometry(1500, 1000),
+                            Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0x0000ff, side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.5}), 0, 1),
+                            0,
+                            0.3
+                    );
+                    ground.position.set(
+                            450,
+                            0,
+                            0
+                    );
+
+                    //ground.rotation.x = (Math.PI / 2) * 3;
+                    ground.rotation.y = (Math.PI / 2) * 3;
+                    scene.add(ground);
+
+                    //left
+                    ground = new Physijs.PlaneMesh(
+                            new THREE.PlaneGeometry(1500, 1000),
+                            Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0xffffff, side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.5}), 0, 1),
+                            0,
+                            0.3
+                    );
+                    ground.position.set(
+                            0,
+                            0,
+                            310
+                    );
+
+                    ground.rotation.x = (Math.PI / 2) *2 ;
+                    //ground.rotation.y = 2* (Math.PI / 2);
+                    scene.add(ground);
+
+                    //right
+                    ground = new Physijs.PlaneMesh(
+                            new THREE.PlaneGeometry(1500, 1000),
+                            Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.5}), 0, 1),
+                            0,
+                            0.3
+                    );
+                    ground.position.set(
+                            0,
+                            0,
+                            -310
+                    );
+
+                    ground.rotation.x = (Math.PI / 2) *4 ;
+                    //ground.rotation.y = 2* (Math.PI / 2);
+                    scene.add(ground);
+
+
+
+
+                    var friction = 1; // high friction
+                    var restitution = 0.5; // low restitution
+
+                    box = new Physijs.SphereMesh(
+                            new THREE.SphereGeometry( 10, 10, 10 ),
+                            Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0xceff00}), 0, 0.6),
+                            2
+                    );
+
+                    box.collisions = 0;
+
+                    box.position.set(
+                            Math.random() * 15 - 7.5,
+                            250,
+                            Math.random() * 15 - 7.5
+                    );
+
+                    box.rotation.set(
+                            Math.random() * Math.PI,
+                            Math.random() * Math.PI,
+                            Math.random() * Math.PI
+                    );
+                    //box.addEventListener( 'collision', handleCollision );
+
+
                     scene.add( box );
+
+
 
 
 
@@ -715,7 +857,9 @@
 
 
         });
-
+        var handleCollision = function( collided_with, linearVelocity, angularVelocity ) {
+            console.log("collision: " + collided_with + linearVelocity + angularVelocity)
+        };
 
         var textureEquirec;
 
@@ -1242,11 +1386,28 @@ else {
             //camera.lookAt(circle.position);
 
         }
-        scene.simulate(); // run physics
-        renderer.clear();
+
+        //renderer.clear();
+
+        if (player !== undefined) {
+
+
+            capsule.position.x= player.position.x;
+            capsule.position.z= player.position.z;
+
+
+            capsule.__dirtyPosition = true;
+
+            // You may also want to cancel the object's velocity
+            capsule.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+            capsule.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+        }
+
+            scene.simulate(); // run physics
         renderer.render(scene, camera);
 
         if (player !== undefined) {
+
 
 
             // colorWriteSet(player,true);
