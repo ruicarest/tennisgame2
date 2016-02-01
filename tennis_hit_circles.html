@@ -259,6 +259,19 @@
 
     var colladaModel;
 
+    var hits = {
+        hit1: {
+            force: new THREE.Vector3(500, 500, 0),
+            optimalDirection: new THREE.Vector3(1,0,0),
+            maxDistanceToPlayer: 1000
+        },
+        hit2: {
+            force: new THREE.Vector3(500, 500, 0),
+            optimalDirection: new THREE.Vector3(1,0,0),
+            maxDistanceToPlayer: 1000
+        }
+    };
+
     init();
 
 
@@ -1202,6 +1215,22 @@ else {
 
     }
 
+    function calculateImpulse(boxPosition, playerPosition, hitForce, ballDirection, optimalDirection)
+    {
+        var distance = boxPosition.distanceTo(playerPosition);
+        if(distance > hits.hit1.maxDistanceToPlayer)
+            return ballDirection;
+
+        var oppositeBallDirection = ballDirection;
+        oppositeBallDirection.z = -ballDirection.x;
+        var cosAngle = Math.cos(optimalDirection.dot(oppositeBallDirection) / (oppositeBallDirection.length() *  ballDirection.length()));
+
+        var output = new THREE.Vector3(hitForce.x, hitForce.y, hitForce.z);
+        output.multiplyScalar(cosAngle);
+
+        return output;
+    }
+
     function playHit() {
 
         /*
@@ -1239,12 +1268,15 @@ else {
 
         animation.play(startTime);
 
-        box.setLinearVelocity( new THREE.Vector3(100, 500, 100));
 
 
+        //var impulseX =  hits.hit1.velocidadeX  * (1/Math.abs(hits.hit1.anguloPreferencialDaVindaDaBola.x - anguloActualVindaBola) + 1/(distanciaJogador- posiçaoMaximaDaBolaRelativaAoJogador.x ) x velocidadeActualBola.x );
+        //box.setLinearVelocity(new THREE.Vector3(impulsoFinalX, impulsoFinalY, impulsoFinalZ));
 
+
+        var impulse = calculateImpulse(box.position, player.position, hits.hit1.force, box.getLinearVelocity(), hits.hit1.optimalDirection);
+        box.setLinearVelocity(impulse);
     }
-
 
     function playAnimation() {
 
