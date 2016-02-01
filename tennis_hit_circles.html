@@ -261,14 +261,24 @@
 
     var hits = {
         hit1: {
-            force: new THREE.Vector3(500, 500, 0),
-            optimalDirection: new THREE.Vector3(1,0,0),
-            maxDistanceToPlayer: 1000
+            force: new THREE.Vector3(500, 500, 200),
+            optimalDirection: new THREE.Vector3(1,0,0.5),
+            maxDistanceToPlayer: 600
         },
         hit2: {
-            force: new THREE.Vector3(500, 500, 0),
+            force: new THREE.Vector3(500, -500, 200),
             optimalDirection: new THREE.Vector3(1,0,0),
-            maxDistanceToPlayer: 1000
+            maxDistanceToPlayer: 600
+        },
+        hit3: {
+            force: new THREE.Vector3(500, 500, -200),
+            optimalDirection: new THREE.Vector3(1,0,0),
+            maxDistanceToPlayer: 600
+        },
+        hit4: {
+            force: new THREE.Vector3(500, -500, -200),
+            optimalDirection: new THREE.Vector3(1,0,0),
+            maxDistanceToPlayer: 600
         }
     };
 
@@ -1247,18 +1257,32 @@ else {
         */
         //alert("hit animation: " + currentAnimation );
 
-        if ( hittedCircle === 0 )       //top left 
+        var hit;
+        if ( hittedCircle === 0 )       //top left
+        {
+            hit = hits.hit1;
             currentAnimation = 9;
+        }
+
         
-        if ( hittedCircle === 1 )       //bottom left 
+        if ( hittedCircle === 1 )       //bottom left
+        {
+            hit = hits.hit2;
             currentAnimation = 5;
-        
+        }
+
         if ( hittedCircle === 2 )       //top right
+        {
+            hit = hits.hit3;
             currentAnimation = 3;
+        }
+
         
         if ( hittedCircle === 3 )       //bottom right
+        {
+            hit = hits.hit4;
             currentAnimation = 4;
-
+        }
 
         hitting = true;
 
@@ -1273,8 +1297,7 @@ else {
         //var impulseX =  hits.hit1.velocidadeX  * (1/Math.abs(hits.hit1.anguloPreferencialDaVindaDaBola.x - anguloActualVindaBola) + 1/(distanciaJogador- posiçaoMaximaDaBolaRelativaAoJogador.x ) x velocidadeActualBola.x );
         //box.setLinearVelocity(new THREE.Vector3(impulsoFinalX, impulsoFinalY, impulsoFinalZ));
 
-
-        var impulse = calculateImpulse(box.position, player.position, hits.hit1.force, box.getLinearVelocity(), hits.hit1.optimalDirection);
+        var impulse = calculateImpulse(box.position, player.position, hit.force, box.getLinearVelocity(), hit.optimalDirection);
         box.setLinearVelocity(impulse);
     }
 
