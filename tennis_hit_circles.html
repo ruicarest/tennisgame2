@@ -67,6 +67,8 @@
     var ground;
     var capsule;
 
+    var ready = false;
+
     var container, stats;
 
     var scaleCircle = 20;
@@ -654,6 +656,8 @@
 
                         );
 
+                        ready = true;
+
                         // $("#loading").hide();
                         document.getElementById("loading").style.display = "none";;
 
@@ -738,7 +742,7 @@
                             new THREE.PlaneGeometry(1500, 1000),
                             Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0x00ffff, side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.5}), 0, 1),
+            opacity: 0.1}), 0, 1),
                             0,
                             0.3
                     );
@@ -751,11 +755,12 @@
                     scene.add(ground);
 
                     //front
+
                     ground = new Physijs.PlaneMesh(
                             new THREE.PlaneGeometry(1500, 1000),
                             Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0x0000ff, side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.5}), 0, 1),
+            opacity: 0.1}), 0, 1),
                             0,
                             0.3
                     );
@@ -769,12 +774,37 @@
                     ground.rotation.y = (Math.PI / 2) * 3;
                     scene.add(ground);
 
+                    // end front
+
+                    //back
+
+                    ground = new Physijs.PlaneMesh(
+                            new THREE.PlaneGeometry(1500, 1000),
+                            Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0xaaffaa, side: THREE.FrontSide,
+                                transparent: true,
+                                opacity: 0}), 0, 1),
+                            0,
+                            0.3
+                    );
+                    ground.position.set(
+                            -450,
+                            0,
+                            0
+                    );
+
+                    //ground.rotation.x = (Math.PI / 2) * 3;
+                    ground.rotation.y = (Math.PI / 2) ;
+                    scene.add(ground);
+
+                    //end back
+
                     //left
+
                     ground = new Physijs.PlaneMesh(
                             new THREE.PlaneGeometry(1500, 1000),
                             Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0xffffff, side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.5}), 0, 1),
+            opacity: 0.1}), 0, 1),
                             0,
                             0.3
                     );
@@ -788,12 +818,15 @@
                     //ground.rotation.y = 2* (Math.PI / 2);
                     scene.add(ground);
 
+                    //end left
+
                     //right
+
                     ground = new Physijs.PlaneMesh(
                             new THREE.PlaneGeometry(1500, 1000),
                             Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.5}), 0, 1),
+            opacity: 0.1}), 0, 1),
                             0,
                             0.3
                     );
@@ -806,6 +839,8 @@
                     ground.rotation.x = (Math.PI / 2) *4 ;
                     //ground.rotation.y = 2* (Math.PI / 2);
                     scene.add(ground);
+
+                    //end right
 
 
 
@@ -1204,6 +1239,8 @@ else {
 
         animation.play(startTime);
 
+        box.setLinearVelocity( new THREE.Vector3(100, 500, 100));
+
 
 
     }
@@ -1402,7 +1439,7 @@ else {
             capsule.setLinearVelocity(new THREE.Vector3(0, 0, 0));
             capsule.setAngularVelocity(new THREE.Vector3(0, 0, 0));
         }
-
+        if ( !playerLoad || ready )         //does not start simulation physics if loading player model
             scene.simulate(); // run physics
         renderer.render(scene, camera);
 
