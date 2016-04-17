@@ -138,7 +138,8 @@
     };
 
     var circle;
-
+    var circleWall;
+    var tweenWall;
     var circlesHit = [];
 
     var hittedCircle = -1;
@@ -257,7 +258,7 @@
         animation: 0
     };
 
-    var colladaModel;
+    var courtModel;
 
     var hits = {
         hit1: {
@@ -276,6 +277,11 @@
             maxDistanceToPlayer: 270
         },
         hit4: {
+            force: new THREE.Vector3(500, -500, -200),
+            optimalDirection: new THREE.Vector3(1,0,0),
+            maxDistanceToPlayer: 270
+        },
+        hitWall: {
             force: new THREE.Vector3(500, -500, -200),
             optimalDirection: new THREE.Vector3(1,0,0),
             maxDistanceToPlayer: 270
@@ -308,9 +314,9 @@
         var circleGeometry = new THREE.CircleGeometry(radius, segments);
 
         for ( var i = 0; i < circlesN; i++ ) {
-                
+
                 circleTemp = new THREE.Mesh(circleGeometry, material);
-        
+
                 circleTemp.rotation.x = Math.PI / 2;
 
                 circleTemp.name = "hit_circle_" + i ;
@@ -321,15 +327,15 @@
 
                 //hot fix for near the border circles
                 if ( xCalculated > 0 ) xCalculated = 450;
-        
+
                 circleTemp.position.set(
 
                     xCalculated,                 //positive/negative alternating
 
                     -228,
-                    
+
                     zT * Math.pow( -1, ( i < 2 ) )          //2 positives then 2 negatives
-                    
+
                     );
 
                 circlesTemp.push(circleTemp);
@@ -359,7 +365,7 @@
                 f1.add(animationController, "animation", 0.0, sizeT, 1)
                     .onChange(function(newValue) {playAnimation();
                     });
-          
+
 
                 f1.open();
 
@@ -373,7 +379,7 @@
 
 //        initGui();
 
-        
+
 
 
         container = document.createElement('div');
@@ -477,6 +483,39 @@
         });
 
         tween.start();
+
+        /********************
+        //New Circle Wall
+         ********************/
+
+        var materialWall = new THREE.MeshPhongMaterial({
+            color: 0x0000ff,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.5
+        });
+
+        circleGeometry = new THREE.CircleGeometry(radius, segments);
+        circleWall = new THREE.Mesh(circleGeometry, materialWall);
+        circleWall.rotation.y = Math.PI / 2;
+
+        circleWall.position.set(
+                0, -228.4, -5.850006103515625);
+
+
+        tweenWall = new TWEEN.Tween(circleWall.scale).to({
+            x: 0.7,
+            y: 0.7,
+            z: 0.7
+        }, 600);
+
+        tweenWall.onComplete(function() {
+            circleWall.scale.x = 1;
+            circleWall.scale.y = 1;
+            circleWall.scale.z = 1;
+            tweenWall.start();
+        });
+
 
 
         if (playerLoad === true) {
@@ -713,7 +752,7 @@
 
             result.scene.scale.x = result.scene.scale.y = result.scene.scale.z = 1;
 
-            //colladaModel = result.scene;
+            //courtModel = result.scene;
 
             var posNew;
 
@@ -749,16 +788,16 @@
                         helper2.position.set(-5.850006103515625, 228.5, 0);
                     }
 
-                    colladaModel = child2;
+                    courtModel = child2;
 
-                    //colladaModel.castShadow = true;
-                    colladaModel.receiveShadow = true;
+                    //courtModel.castShadow = true;
+                    courtModel.receiveShadow = true;
 
-                    colladaModel.name = "court";
+                    courtModel.name = "court";
 
-                    scene.add(colladaModel);
+                    scene.add(courtModel);
 
-                    camera.lookAt(colladaModel.position);
+                    camera.lookAt(courtModel.position);
 
                     //floor
                     ground = new Physijs.PlaneMesh(
@@ -899,19 +938,19 @@
 
 
 
-                    console.log("colladaModel:")
+                    console.log("courtModel:")
 
-                    console.log(colladaModel);
+                    console.log(courtModel);
 
 
                     //scenario displacement
-                    colladaModel.position.set(-5.850006103515625, 228.5, 0);
+                    courtModel.position.set(-5.850006103515625, 228.5, 0);
 
                 }
 
             });
 
-        
+
 
 
         });
@@ -1026,6 +1065,7 @@ if(playerMove)
 
         var distanceRadius = 20;
 
+        //test for red circles
         if ( hittedCircle === -1 ) {
             for (var i = 0; i < circles.length; i++) {
 
@@ -1055,7 +1095,6 @@ if(playerMove)
 
     function checkHitCirclesCollision(){
 
-        
 
     }
 
@@ -1097,10 +1136,11 @@ if(playerMove)
 
         console.log("clicked on x " + circle.position.x + "and z " + circle.position.z);
 
+        //Check red circles
         if (checkHitCirclesCollision())
             return;
 
-        if ( !clicked || true ) {
+        if ( (!clicked || true ) && circle.visible ) {
 
             if ( hitting )
                 {
@@ -1150,21 +1190,21 @@ if(playerMove)
             var raycaster2 = new THREE.Raycaster(new THREE.Vector3(circle.position.x, circle.position.y + 10, circle.position.z),
                 new THREE.Vector3(1, 0, 0), 0, 100);
 
-            var intersects = raycaster2.intersectObject(colladaModel);
+            var intersects = raycaster2.intersectObject(courtModel);
             if (intersects.length > 0)
                 alert(raycaster2.ray.origin.distanceTo(intersects[0].point));
 
             raycaster2 = new THREE.Raycaster(circle.position,
                 new THREE.Vector3(-1, 0, 0), 0, 100);
 
-            var intersects = raycaster2.intersectObject(colladaModel);
+            var intersects = raycaster2.intersectObject(courtModel);
             if (intersects.length > 0)
                 alert(raycaster2.ray.origin.distanceTo(intersects[0].point));
 
             raycaster2 = new THREE.Raycaster(circle.position,
                 new THREE.Vector3(0, 0, 1), 0, 100);
 
-            var intersects = raycaster2.intersectObject(colladaModel);
+            var intersects = raycaster2.intersectObject(courtModel);
             if (intersects.length > 0)
                 alert(raycaster2.ray.origin.distanceTo(intersects[0].point));
 
@@ -1230,11 +1270,32 @@ else {
 }
         }
 
+        if(circleWall.visible){
+            var _intensity  = 10;
+            var _wallPosition = circleWall.position;
+            var _ballPosition = box.position;
+            var _ball = box;
+            var _playerPosition = player.position;
+            var _maximumDistance = hits.hitWall.maxDistanceToPlayer;
+            var _distanceToWall = _wallPosition.distanceTo(_ballPosition);
+            _wallPosition.sub(_ballPosition);
+            var _wallBallVector = _wallPosition;
+            console.log(_wallBallVector + " " + (typeof _wallBallVector) + " " + _distanceToWall );
+            _wallBallVector.normalize();
+
+            if ( _ballPosition.distanceToSquared(_playerPosition) < _maximumDistance || true){
+
+                _ball.setLinearVelocity(new THREE.Vector3(_wallBallVector.x *_distanceToWall* _intensity, -_wallBallVector.y *_distanceToWall , _wallBallVector.z * _distanceToWall * _intensity));
+                //_ball.setLinearVelocity(_wallBallVector.multiplyScalar(_distanceToWall*2));
+            }
+
+        }
+
     }
 
-    function calculateImpulse(boxPosition, playerPosition, hitForce, ballDirection, optimalDirection)
+    function calculateImpulse(ballPosition, playerPosition, hitForce, ballDirection, optimalDirection)
     {
-        var distance = boxPosition.distanceTo(playerPosition);
+        var distance = ballPosition.distanceTo(playerPosition);
         if(distance > hits.hit1.maxDistanceToPlayer)
             return ballDirection;
 
@@ -1271,7 +1332,7 @@ else {
             currentAnimation = 9;
         }
 
-        
+
         if ( hittedCircle === 1 )       //bottom left
         {
             hit = hits.hit2;
@@ -1284,7 +1345,7 @@ else {
             currentAnimation = 3;
         }
 
-        
+
         if ( hittedCircle === 3 )       //bottom right
         {
             hit = hits.hit4;
@@ -1329,9 +1390,10 @@ else {
 
         raycaster.setFromCamera(mouse, camera);
 
-        var intersects = raycaster.intersectObject(colladaModel, true);
+        var intersects = raycaster.intersectObject(courtModel, true);
 
-        if (intersects.length > 0 && player !== undefined && colladaModel !== undefined) {
+
+        if (intersects.length > 0 && player !== undefined && courtModel !== undefined) {
 
             //console.log(intersects.length);
 
@@ -1347,35 +1409,53 @@ else {
 
                 }
 
-                if (intersects[i].object.name.indexOf(colladaModel.name) > -1 && (intersects[i].faceIndex === 14 || intersects[i].faceIndex === 15 || intersects[i].faceIndex === 13)) {
+                if (intersects[i].object.name.indexOf(courtModel.name) > -1 && (intersects[i].faceIndex === 14 || intersects[i].faceIndex === 15 || intersects[i].faceIndex === 13)) {
 
-                    colladaModel.add(player);
+                    courtModel.add(player);
 
-                    if ( lightToAdd ) {
+                    if (lightToAdd) {
                         player.add(new THREE.AmbientLight(0x777777));
 
                         //alert(circles.length);
 
-                        for (var i = 0; i< circles.length; i++)
-                        colladaModel.add(circles[i]);
+                        for (var i = 0; i < circles.length; i++)
+                            courtModel.add(circles[i]);
 
                         lightToAdd = false;
 
                     }
                     player.position.y = elevationCourt;
 
-                    colladaModel.add(circle);
+                    circle.visible = true;
+                    circleWall.visible = false;
+
+                    courtModel.add(circle);
 
                     circle.position.set(
-                        intersects[i].point.x,
-                        intersects[i].point.y - 227.4,
-                        intersects[i].point.z - 5.850006103515625);
+                            intersects[i].point.x,
+                            intersects[i].point.y - 227.4,
+                            intersects[i].point.z - 5.850006103515625);
+
+                }
+
+                //Check Front Wall Collision
+                if (intersects[i].object.name.indexOf(courtModel.name) > -1 && (intersects[i].faceIndex === 10 || intersects[i].faceIndex === 9)) {
+
+
+                    circle.visible = false;
+                    circleWall.visible = true;
+                    courtModel.add(circleWall);
+
+                    circleWall.position.set(
+                            intersects[i].point.x,
+                            intersects[i].point.y - 227.4,
+                            intersects[i].point.z - 5.850006103515625);
 
                 }
 
             }
 
-            //console.log(intText);
+        //   console.log(intText);
 
         }
 
@@ -1408,7 +1488,7 @@ else {
 
         requestAnimationFrame(animate);
 
- 
+
 
         if (animation !== undefined) {
 
@@ -1423,7 +1503,7 @@ else {
                 startTime = animationSegments[currentAnimation].t0;
                 endTime = animationSegments[currentAnimation].tn;
 
-            } 
+            }
 
             else {
 
@@ -1474,13 +1554,13 @@ else {
 
         //camera.lookAt(scene.position);
 
-        if (colladaModel !== undefined) {
+        if (courtModel !== undefined) {
 
-            //  colladaModel.position.y = -20000;
+            //  courtModel.position.y = -20000;
 
             //camera.position.y = -20000;
 
-            //camera.lookAt(colladaModel.position);
+            //camera.lookAt(courtModel.position);
 
             //camera.lookAt(circle.position);
 
