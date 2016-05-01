@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <head>
     <title>three.js webgl - squash test</title>
     <meta charset="utf-8">
@@ -60,6 +61,11 @@
 
     <script>
 
+    /* HELP
+
+
+
+    */
     Physijs.scripts.worker = 'physi/physijs_worker.js';
     Physijs.scripts.ammo = 'js/ammo.js';
 
@@ -139,6 +145,7 @@
 
     var circle;
     var circleWall;
+    var circleCollision;
     var tweenWall;
     var circlesHit = [];
 
@@ -495,9 +502,19 @@
             opacity: 0.5
         });
 
+        var materialCollision = new THREE.MeshPhongMaterial({
+            color: 0x00ffff,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.5
+        });
+
         circleGeometry = new THREE.CircleGeometry(radius, segments);
         circleWall = new THREE.Mesh(circleGeometry, materialWall);
         circleWall.rotation.y = Math.PI / 2;
+
+        circleCollision = new THREE.Mesh(circleGeometry, materialCollision);
+        circleCollision.rotation.y = Math.PI / 2;
 
         circleWall.position.set(
                 0, -228.4, -5.850006103515625);
@@ -929,7 +946,7 @@
                             Math.random() * Math.PI,
                             Math.random() * Math.PI
                     );
-                    //box.addEventListener( 'collision', handleCollision );
+                    box.addEventListener( 'collision', handleCollision );
 
 
                     scene.add( box );
@@ -956,6 +973,7 @@
         });
         var handleCollision = function( collided_with, linearVelocity, angularVelocity ) {
             console.log("collision: " + collided_with + linearVelocity + angularVelocity)
+            circleCollision.position.set(box.position.x,-227+box.position.y,-5+box.position.z);
         };
 
         var textureEquirec;
@@ -1271,21 +1289,50 @@ else {
         }
 
         if(circleWall.visible){
-            var _intensity  = 10;
+
+            camera.rotation.y = -1.5;
+            camera.position.x = -1010;
+
+            var _intensity  = 500;
             var _wallPosition = circleWall.position;
             var _ballPosition = box.position;
             var _ball = box;
             var _playerPosition = player.position;
             var _maximumDistance = hits.hitWall.maxDistanceToPlayer;
-            var _distanceToWall = _wallPosition.distanceTo(_ballPosition);
+           // var _distanceToWall = _wallPosition.distanceTo(_ballPosition);
             _wallPosition.sub(_ballPosition);
             var _wallBallVector = _wallPosition;
-            console.log(_wallBallVector + " " + (typeof _wallBallVector) + " " + _distanceToWall );
+            //console.log(_wallBallVector + " " + (typeof _wallBallVector) + " " + _distanceToWall );
             _wallBallVector.normalize();
 
-            if ( _ballPosition.distanceToSquared(_playerPosition) < _maximumDistance || true){
+            //
 
-                _ball.setLinearVelocity(new THREE.Vector3(_wallBallVector.x *_distanceToWall* _intensity, -_wallBallVector.y *_distanceToWall , _wallBallVector.z * _distanceToWall * _intensity));
+            if ( _ballPosition.distanceToSquared(_playerPosition) < _maximumDistance || true){
+                //console.log("distance to wall: " + _distanceToWall);
+                console.log("_wallPosition.y " + _wallPosition.y);
+                console.log("circleWall.position.y " + circleWall.position.y);
+                console.log("circleWall.position.z " + circleWall.position.z);
+                console.log("wall ball vector Y " + box.position.x);
+                var timeToHit = (_wallPosition.x) / (_wallPosition.x * _intensity);
+
+                var _x =  _wallBallVector.x * _intensity ;
+                var _y = - 227.4 +  (_wallBallVector.y*_intensity + (980/2) * (timeToHit^2) ) / (timeToHit*_intensity );
+                var _z =  - 5.850006103515625 + _wallBallVector.z * _intensity;
+
+
+                //console.log("wall ball vector Z " + _wallBallVector.z);
+                //_ball.setLinearVelocity(new THREE.Vector3(_wallBallVector.x *_distanceToWall* _intensity, _wallBallVector.y *_distanceToWall * _intensity , _wallBallVector.z * _distanceToWall));
+
+
+                _ball.setLinearVelocity(new THREE.Vector3( _x, _y,  _z));
+                console.log("_x:" + _x + "\n_y:" +_y +"\n_z:" +_z+ "\nT:" + timeToHit);
+
+
+
+                console.log("_wallBallVector:" + _wallBallVector.x + " " + _wallBallVector.y + " " +_wallBallVector.z );
+                //alert("_wallPosition:" + _wallPosition.x + " " + _wallPosition.y + " " +_wallPosition.z );
+              //  _ball.setLinearVelocity(new THREE.Vector3(_wallBallVector.x * _intensity * _wallPosition.x, _wallBallVector.y * 9.8 * _intensity * _wallPosition.y, _wallBallVector.z * _intensity *  _wallPosition.z));
+
                 //_ball.setLinearVelocity(_wallBallVector.multiplyScalar(_distanceToWall*2));
             }
 
@@ -1445,6 +1492,8 @@ else {
                     circle.visible = false;
                     circleWall.visible = true;
                     courtModel.add(circleWall);
+                    courtModel.add(circleCollision);
+                    circleCollision.visible = true;
 
                     circleWall.position.set(
                             intersects[i].point.x,
