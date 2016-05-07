@@ -73,11 +73,18 @@
     var ground;
     var capsule;
 
+    var params = {
+        projectedLength: 100,
+        intensity: 500
+    };
+
     var ready = false;
 
     var container, stats;
 
     var scaleCircle = 20;
+
+    var projectedBalls = [];
 
     var tween;
 
@@ -142,6 +149,8 @@
         manualPose: false
 
     };
+
+    var mouseDown = false;
 
     var circle;
     var circleWall;
@@ -549,6 +558,7 @@
 
             var loader2 = new THREE.ColladaLoader();
             loader2.load("./squash/player/wip2.dae", function(collada) {
+            //loader2.load("./squash/player/player_6.dae", function(collada) {
 
                 console.log(collada);
 
@@ -929,11 +939,12 @@
 
                     box = new Physijs.SphereMesh(
                             new THREE.SphereGeometry( 10, 10, 10 ),
-                            Physijs.createMaterial(new THREE.MeshBasicMaterial({color: 0xceff00}), 0, 0.6),
+                            Physijs.createMaterial(new THREE.MeshPhongMaterial({color: 0xceff00}), 0, 0.6),
                             2
                     );
 
                     box.collisions = 0;
+                    box.castShadow = true;
 
                     box.position.set(
                             Math.random() * 15 - 7.5,
@@ -950,6 +961,21 @@
 
 
                     scene.add( box );
+
+
+                    for ( var k = 0; k < params.projectedLength; k ++) {
+
+                        var _box = new THREE.Mesh(
+                                new THREE.SphereGeometry( 5, 5, 5 ),
+                                Physijs.createMaterial(new THREE.MeshPhongMaterial({color: 0xff0000}), 0, 0.6),
+                                2
+                        );
+                        projectedBalls.push(_box);
+
+                        scene.add(_box);
+
+
+                    }
 
 
 
@@ -973,7 +999,7 @@
         });
         var handleCollision = function( collided_with, linearVelocity, angularVelocity ) {
             console.log("collision: " + collided_with + linearVelocity + angularVelocity)
-            circleCollision.position.set(box.position.x,-227+box.position.y,-5+box.position.z);
+            circleCollision.position.set(-10+box.position.x,-227+box.position.y,-5+box.position.z);
         };
 
         var textureEquirec;
@@ -1029,6 +1055,8 @@
         container.appendChild(renderer.domElement);
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
+        document.addEventListener('mousedown', onDocumentMouseDown, false);
+        document.addEventListener('mouseup', onDocumentMouseUp, false);
 if(playerMove)
         document.addEventListener("click", onDocumentClick, false);
 
@@ -1290,11 +1318,11 @@ else {
 
         if(circleWall.visible){
 
-            camera.rotation.y = -1.5;
-            camera.position.x = -1010;
+           // camera.rotation.y = -1.5;
+           // camera.position.x = -1010;
 
-            var _intensity  = 500;
-            var _wallPosition = circleWall.position;
+            var _intensity  = params.intensity  ;
+            var _wallPosition = circleWall.position.clone();
             var _ballPosition = box.position;
             var _ball = box;
             var _playerPosition = player.position;
@@ -1413,6 +1441,8 @@ else {
         //box.setLinearVelocity(new THREE.Vector3(impulsoFinalX, impulsoFinalY, impulsoFinalZ));
 
         var impulse = calculateImpulse(box.position, player.position, hit.force, box.getLinearVelocity(), hit.optimalDirection);
+       // box.setImpulse(new THREE.Vec3( 0,0,0 ) );
+        box.setAngularVelocity(new THREE.Vec3(0,0,0));
         box.setLinearVelocity(impulse);
     }
 
@@ -1427,6 +1457,58 @@ else {
 
     }
 
+    function clearProjectedTrajectory() {
+        for ( var k = 0; k < params.projectedLength; k ++) {
+
+            projectedBalls[k].visible = false;
+        }
+    }
+
+    function drawProjectedTrajectory(){
+
+        for ( var k = 0; k < params.projectedLength; k ++) {
+
+            projectedBalls[k].visible=true;
+
+            var _intensity = params.intensity;
+            var _wallPosition = circleWall.position.clone();
+            var _ballPosition = box.position;
+            var _ball = box;
+            var _playerPosition = player.position;
+            var _maximumDistance = hits.hitWall.maxDistanceToPlayer;
+            _wallPosition.sub(_ballPosition);
+            var _wallBallVector = _wallPosition;
+            _wallBallVector.normalize();
+            var timeToHit = (_wallPosition.x) / (_wallPosition.x * _intensity);
+
+            // log is used so the initial balls are not that near (at first ball will have more speed so the first balls apear nearer)
+            var _t = 1/ (Math.log(k)  );
+
+
+            var _x = _ball.position.x + _wallBallVector.x * _intensity * _t;
+            //var _y = _ball.position.y + (-227.4 + (_wallBallVector.y * _intensity + (980 / 2) * (_t ^ 2) ) / (timeToHit * _intensity )) * _t;
+            var _y = _ball.position.y + ((-227.4 + (_wallBallVector.y * _intensity + (980 / 2) * (_t ^ 2) ) / (timeToHit * _intensity )) * _t) - 980/2 * _t^2;
+            var _z = _ball.position.z + (-5.850006103515625 + _wallBallVector.z * _intensity) * _t;
+
+
+           var _position = new THREE.Vector3(_x, _y, _z);
+            projectedBalls[k].position.set(_x, _y, _z);
+
+
+
+        }
+
+
+    }
+
+    function onDocumentMouseDown(event){
+        mouseDown = true;
+    }
+    function onDocumentMouseUp(event){
+        mouseDown = false;
+    }
+
+
     function onDocumentMouseMove(event) {
 
         mouseX = (event.clientX - windowHalfX) / 2;
@@ -1436,6 +1518,7 @@ else {
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
         raycaster.setFromCamera(mouse, camera);
+
 
         var intersects = raycaster.intersectObject(courtModel, true);
 
@@ -1478,15 +1561,17 @@ else {
 
                     courtModel.add(circle);
 
-                    circle.position.set(
-                            intersects[i].point.x,
-                            intersects[i].point.y - 227.4,
-                            intersects[i].point.z - 5.850006103515625);
+                    if (intersects[i] && intersects[i].point)
+                        circle.position.set(
+                                intersects[i].point.x,
+                                intersects[i].point.y - 227.4,
+                                intersects[i].point.z - 5.850006103515625);
 
-                }
+                    }
+
 
                 //Check Front Wall Collision
-                if (intersects[i].object.name.indexOf(courtModel.name) > -1 && (intersects[i].faceIndex === 10 || intersects[i].faceIndex === 9)) {
+                if ( intersects[i] && (intersects[i].object.name.indexOf(courtModel.name) > -1 && (intersects[i].faceIndex === 10 || intersects[i].faceIndex === 9)) || intersects[i].object === circleWall) {
 
 
                     circle.visible = false;
@@ -1494,6 +1579,8 @@ else {
                     courtModel.add(circleWall);
                     courtModel.add(circleCollision);
                     circleCollision.visible = true;
+
+
 
                     circleWall.position.set(
                             intersects[i].point.x,
@@ -1592,6 +1679,13 @@ else {
 
         TWEEN.update(time);
 
+
+        if(player && circleWall.visible && mouseDown )
+            drawProjectedTrajectory();
+
+        if (!mouseDown)
+                clearProjectedTrajectory();
+
         render();
 
     }
@@ -1602,6 +1696,19 @@ else {
         //camera.position.y += 2.0 + (-mouseY - camera.position.y) * .05;
 
         //camera.lookAt(scene.position);
+
+        var specialCamera = false;
+
+        if ( specialCamera && player)
+            camera.position.set  (player.position.x,player.position.y,player.position.z);
+
+        camera.position.y = 59;
+
+        //camera follows ball
+        if ( specialCamera && box )
+            camera.lookAt(new THREE.Vector3( circleWall.position.x/4, circleWall.position.y/4, circleWall.position.z/4));
+        else
+            camera.lookAt(new THREE.Vector3(100000,10000,0))
 
         if (courtModel !== undefined) {
 
