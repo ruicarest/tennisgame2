@@ -74,7 +74,7 @@
     var capsule;
 
     var params = {
-        projectedLength: 100,
+        projectedLength: 10,
         intensity: 500
     };
 
@@ -1466,37 +1466,44 @@ else {
 
     function drawProjectedTrajectory(){
 
+        var test = '';
+
+        var _intensity = params.intensity;
+        var _wallPosition = circleWall.position.clone();
+        var _ballPosition = box.position;
+        var _ball = box;
+        test += '\n ball original' + 'position: ' + _ball.position.x + ' ' + _ball.position.y + ' ' + _ball.position.z;
+        var _playerPosition = player.position;
+        var _maximumDistance = hits.hitWall.maxDistanceToPlayer;
+        _wallPosition.sub(_ballPosition);
+        var _wallBallVector = _wallPosition;
+        _wallBallVector.normalize();
+        var timeToHit = (_wallPosition.x) / (_wallPosition.x * _intensity);
+        var _v0x =  _wallBallVector.x * _intensity ;
+        var _v0y = _wallBallVector.y*_intensity ;
+        test += " v0y: " + _v0y;
+        var _v0z = _wallBallVector.z * _intensity;
+        var _t = 0;
+        //var a0y = (980/2) * (timeToHit^2) / (timeToHit*_intensity );
         for ( var k = 0; k < params.projectedLength; k ++) {
 
             projectedBalls[k].visible=true;
 
-            var _intensity = params.intensity;
-            var _wallPosition = circleWall.position.clone();
-            var _ballPosition = box.position;
-            var _ball = box;
-            var _playerPosition = player.position;
-            var _maximumDistance = hits.hitWall.maxDistanceToPlayer;
-            _wallPosition.sub(_ballPosition);
-            var _wallBallVector = _wallPosition;
-            _wallBallVector.normalize();
-            var timeToHit = (_wallPosition.x) / (_wallPosition.x * _intensity);
+             _t = k * 1/params.projectedLength;
+            var _aTy = _t === 0 ? 0 : (980/2 * (_t ^2))/ (_t *_intensity );
 
-            // log is used so the initial balls are not that near (at first ball will have more speed so the first balls apear nearer)
-            var _t = 1/ (Math.log(k)  );
+            //py = py0 + vy*t - 1/2*g*t^2
+            var _x = _ballPosition.x + _v0x * _t;
+            var _y =  _ballPosition.y + _v0y * _t - _aTy;
+            var _z =  _ballPosition.z + _v0z * _t;
 
 
-            var _x = _ball.position.x + _wallBallVector.x * _intensity * _t;
-            //var _y = _ball.position.y + (-227.4 + (_wallBallVector.y * _intensity + (980 / 2) * (_t ^ 2) ) / (timeToHit * _intensity )) * _t;
-            var _y = _ball.position.y + ((-227.4 + (_wallBallVector.y * _intensity + (980 / 2) * (_t ^ 2) ) / (timeToHit * _intensity )) * _t) - 980/2 * _t^2;
-            var _z = _ball.position.z + (-5.850006103515625 + _wallBallVector.z * _intensity) * _t;
-
-
-           var _position = new THREE.Vector3(_x, _y, _z);
+            var _position = new THREE.Vector3(_x, _y, _z);
             projectedBalls[k].position.set(_x, _y, _z);
-
-
-
+            test += '\n ball ' + k + 'position: ' + _position.x + ' ' + _position.y + ' ' + _position.z + " aTy:" + _aTy;
         }
+
+        //alert(test);
 
 
     }
