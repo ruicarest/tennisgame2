@@ -61,221 +61,128 @@
 
     <script>
 
-    /* HELP
-
-
-
-    */
     Physijs.scripts.worker = 'physi/physijs_worker.js';
     Physijs.scripts.ammo = 'js/ammo.js';
-
     var box;
     var ground;
     var capsule;
-
     var params = {
         projectedLength: 10,
         intensity: 500
     };
-
     var ready = false;
-
     var container, stats;
-
     var scaleCircle = 20;
-
     var projectedBalls = [];
-
     var tween;
-
     var tweenMovePlayer;
-
     var tweenAnimateHit;
-
     var tweenMovePlayerCount = 0;
-
     var clicked = false;
-
     var camera, scene, scene2, renderer;
-
     var elevationCourt = -228.5;
-
-    var mouseX = 0,
-        mouseY = 0;
-
+    var mouseX = 0;
+    var mouseY = 0;
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
-
     var windowHalfX = window.innerWidth / 2;
     var windowHalfY = window.innerHeight / 2;
-
     var clock = new THREE.Clock();
     var player;
-
     var helper;
-
     var bbox;
-
     var handBoneLeft;
-
     var handBoneRight;
-
     var racket;
-
     var animation;
-
     var currentSequence = "idle";
-
     var lightToAdd = true;
-
     var skybox;
-
     var gui;
-
     var playerLoad = true;
-
     var directionalLight;
-
     var ambient;
-
     var currentAnimation = 0;
-
     var animationTest = {
-
         startTime: 0.1,
-
         endTime: 2.4,
-
         manualPose: false
-
     };
-
     var mouseDown = false;
-
     var circle;
     var circleWall;
     var circleCollision;
     var tweenWall;
     var circlesHit = [];
-
     var hittedCircle = -1;
-
     var hitting = false;
-
     var input;
-
-    // Using a little trigonometry calculate a point in
-    // space 1000 units in front of our character
-    var deltaX;
-    var deltaZ;
-
-    // Calculate where this collision focus point is in
-    // relation to our character position
-    var focusX;
-    var focusZ;
-
+    var deltaX;  // Using a little trigonometry calculate a point in
+    var deltaZ;  // space 1000 units in front of our character
+    var focusX; // Calculate where this collision focus point is in
+    var focusZ; // relation to our character position
     var movingUp;
-
     var movingLeft;
-
     var attachedRacket = false;
-
     var playerMove = true;
-
     var animationSegments = [
-
         {
             name: "idle", // 0
             t0: 0.0,
             tn: 2.4
-
         },
-
         {
 
             name: "other", // 1
             t0: 2.4,
             tn: 5
-
         },
-
         {
-
             name: "walk_front", // 2
             t0: 6.17,
             tn: 12.2
-
         },
-
         {
-
             name: "right_to_left_opened", // 3
             t0: 14.3,
             tn: 17.2
-
         },
-
         {
-
             name: "right_to_left_from_top", // 4
             t0: 18.5,
             tn: 20
-
         },
-
         {
-
             name: "left_to_right_from_bottom",  // 5
             t0: 20.5,
             tn: 22.5
-
         },
-
-
-
         {
-
             name: "walk_back",  // 6
             t0: 24.0,
             tn: 29.6
-
         },
-
-
         {
-
             name: "low_right_to_left",  // 7
             t0: 30.5,
             tn: 32.5
-
         },
-
         {
 
             name: "serve_high_right_to_left",  // 8
             t0: 32.5,
             tn: 35.0
-
         },
-
         {
-
             name: "low_left_to_right",  // 9
             t0: 35.0,
             tn: 37.0
-
         }
-
-
-
     ];
-
     var animationController = {
         animation: 0
     };
-
     var courtModel;
-
     var hits = {
         hit1: {
             force: new THREE.Vector3(500, 500, 200),
@@ -310,9 +217,7 @@
     function createHitCircles() {
 
         var circlesN = 4;
-
         var circlesTemp =[];
-
         var zT = 300;
         var xT = 260;
 
@@ -324,9 +229,7 @@
         });
 
         var radius = 20;
-
         var segments = 32;
-
         var circleGeometry = new THREE.CircleGeometry(radius, segments);
 
         for ( var i = 0; i < circlesN; i++ ) {
@@ -407,6 +310,7 @@
         camera.position.x = -600;
 
         camera.position.y = 460;
+        camera.position.y = 59;
 
         // scene
 
@@ -447,8 +351,6 @@
 
         THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
 
-
-        //
 
         /*----------------------
 
@@ -1144,7 +1046,7 @@ if(playerMove)
 
     }
 
-
+    //RUI
     function onKeyboardInput(sender, eventArgs)
     {
         console.log("Key: " + eventArgs.keyCode + " | Hold: " + eventArgs.holdTime);
@@ -1162,6 +1064,28 @@ if(playerMove)
             case 66:                    //b
                 hittedCircle = 1;
                 break;
+            case 82:
+                if(box){
+                    box.__dirtyPosition = true;
+                    box.position.set(
+                            Math.random() * 15 - 7.5,
+                            250,
+                            Math.random() * 15 - 7.5
+                    );
+                }
+                break;
+            case 68:
+                camera.position.z += 50;
+                break;
+            case 65:
+                camera.position.z -= 50;;
+                break;
+            case 87:
+                camera.position.y += 50;
+                break;
+            case 83:
+                camera.position.y -= 50;
+                break;
             default:
                 hittedCircle = -1;
                 break;
@@ -1177,6 +1101,7 @@ if(playerMove)
     {
         console.log("Mouse: " + eventArgs.buttonCode + " | Hold: " + eventArgs.holdTime);
     }
+
 
     function onDocumentClick(event) {
 
@@ -1317,52 +1242,7 @@ else {
         }
 
         if(circleWall.visible){
-
-           // camera.rotation.y = -1.5;
-           // camera.position.x = -1010;
-
-            var _intensity  = params.intensity  ;
-            var _wallPosition = circleWall.position.clone();
-            var _ballPosition = box.position;
-            var _ball = box;
-            var _playerPosition = player.position;
-            var _maximumDistance = hits.hitWall.maxDistanceToPlayer;
-           // var _distanceToWall = _wallPosition.distanceTo(_ballPosition);
-            _wallPosition.sub(_ballPosition);
-            var _wallBallVector = _wallPosition;
-            //console.log(_wallBallVector + " " + (typeof _wallBallVector) + " " + _distanceToWall );
-            _wallBallVector.normalize();
-
-            //
-
-            if ( _ballPosition.distanceToSquared(_playerPosition) < _maximumDistance || true){
-                //console.log("distance to wall: " + _distanceToWall);
-                console.log("_wallPosition.y " + _wallPosition.y);
-                console.log("circleWall.position.y " + circleWall.position.y);
-                console.log("circleWall.position.z " + circleWall.position.z);
-                console.log("wall ball vector Y " + box.position.x);
-                var timeToHit = (_wallPosition.x) / (_wallPosition.x * _intensity);
-
-                var _x =  _wallBallVector.x * _intensity ;
-                var _y = - 227.4 +  (_wallBallVector.y*_intensity + (980/2) * (timeToHit^2) ) / (timeToHit*_intensity );
-                var _z =  - 5.850006103515625 + _wallBallVector.z * _intensity;
-
-
-                //console.log("wall ball vector Z " + _wallBallVector.z);
-                //_ball.setLinearVelocity(new THREE.Vector3(_wallBallVector.x *_distanceToWall* _intensity, _wallBallVector.y *_distanceToWall * _intensity , _wallBallVector.z * _distanceToWall));
-
-
-                _ball.setLinearVelocity(new THREE.Vector3( _x, _y,  _z));
-                console.log("_x:" + _x + "\n_y:" +_y +"\n_z:" +_z+ "\nT:" + timeToHit);
-
-
-
-                console.log("_wallBallVector:" + _wallBallVector.x + " " + _wallBallVector.y + " " +_wallBallVector.z );
-                //alert("_wallPosition:" + _wallPosition.x + " " + _wallPosition.y + " " +_wallPosition.z );
-              //  _ball.setLinearVelocity(new THREE.Vector3(_wallBallVector.x * _intensity * _wallPosition.x, _wallBallVector.y * 9.8 * _intensity * _wallPosition.y, _wallBallVector.z * _intensity *  _wallPosition.z));
-
-                //_ball.setLinearVelocity(_wallBallVector.multiplyScalar(_distanceToWall*2));
-            }
+            applyTrajectory();
 
         }
 
@@ -1475,14 +1355,18 @@ else {
         test += '\n ball original' + 'position: ' + _ball.position.x + ' ' + _ball.position.y + ' ' + _ball.position.z;
         var _playerPosition = player.position;
         var _maximumDistance = hits.hitWall.maxDistanceToPlayer;
-        _wallPosition.sub(_ballPosition);
-        var _wallBallVector = _wallPosition;
+        var _distance  = _wallPosition.clone();
+        _distance.sub(_ballPosition);
+        var _wallBallVector = _distance.clone();
         _wallBallVector.normalize();
-        var timeToHit = (_wallPosition.x) / (_wallPosition.x * _intensity);
-        var _v0x =  _wallBallVector.x * _intensity ;
-        var _v0y = _wallBallVector.y*_intensity ;
+        var timeToHit = (_distance.x) / (_distance.x * _intensity);
+        //var _v0x =  _wallBallVector.x * _intensity ;
+       // var _v0y = _wallBallVector.y*_intensity ;
+        var _v0x = _distance.x ;
+        var _v0y = _distance.y + 227.4 ;
         test += " v0y: " + _v0y;
-        var _v0z = _wallBallVector.z * _intensity;
+       // var _v0z = _wallBallVector.z * _intensity;
+        var _v0z = _distance.z;
         var _t = 0;
         //var a0y = (980/2) * (timeToHit^2) / (timeToHit*_intensity );
         for ( var k = 0; k < params.projectedLength; k ++) {
@@ -1490,11 +1374,12 @@ else {
             projectedBalls[k].visible=true;
 
              _t = k * 1/params.projectedLength;
-            var _aTy = _t === 0 ? 0 : (980/2 * (_t ^2))/ (_t *_intensity );
+            //var _aTy = _t === 0 ? 0 : (980/2 * (_t ^2))/ (_t *_intensity );
+            var _aTy = _t === 0 ? 0 : (9.80/2 * (_t));
 
             //py = py0 + vy*t - 1/2*g*t^2
             var _x = _ballPosition.x + _v0x * _t;
-            var _y =  _ballPosition.y + _v0y * _t - _aTy;
+            var _y =  _ballPosition.y + _v0y * _t + _aTy;
             var _z =  _ballPosition.z + _v0z * _t;
 
 
@@ -1504,8 +1389,93 @@ else {
         }
 
         //alert(test);
+    }
+
+    function applyTrajectory(){
+
+        var test = '';
+
+        var _intensity = params.intensity;
+        var _wallPosition = circleWall.position.clone();
+        var _ballPosition = box.position;
+        var _ball = box;
+        test += '\n ball original' + 'position: ' + _ball.position.x + ' ' + _ball.position.y + ' ' + _ball.position.z;
+        var _playerPosition = player.position;
+        var _maximumDistance = hits.hitWall.maxDistanceToPlayer;
+        var _distance  = _wallPosition.clone();
+        _distance.sub(_ballPosition);
+        var _wallBallVector = _distance.clone();
+        _wallBallVector.normalize();
+        var timeToHit = (_distance.x) / (_distance.x * _intensity);
+        //var _v0x =  _wallBallVector.x * _intensity ;
+        // var _v0y = _wallBallVector.y*_intensity ;
+        var _v0x = _distance.x ;
+        var _v0y = _distance.y + 227.4 ;
+        test += " v0y: " + _v0y;
+        // var _v0z = _wallBallVector.z * _intensity;
+        var _v0z = _distance.z  + 5.850006103515625;
+        var _t = 1;
+        //var a0y = (980/2) * (timeToHit^2) / (timeToHit*_intensity );
+
+        var _aTy = _t === 0 ? 0 : (980/2 );
+        var _x = _v0x ;
+        var _y =  _v0y + _aTy;
+        var _z =  _v0z;
+
+        console.log(_y);
+
+        _ball.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+        _ball.setLinearVelocity(new THREE.Vector3(_x, _y, _z));
 
 
+        //alert(test);
+    }
+
+    function applyTrajectory2() {
+// camera.rotation.y = -1.5;
+        // camera.position.x = -1010;
+
+        var _intensity = params.intensity;
+        var _wallPosition = circleWall.position.clone();
+        var _ballPosition = box.position;
+        var _ball = box;
+        var _playerPosition = player.position;
+        var _maximumDistance = hits.hitWall.maxDistanceToPlayer;
+        // var _distanceToWall = _wallPosition.distanceTo(_ballPosition);
+        _wallPosition.sub(_ballPosition);
+        var _wallBallVector = _wallPosition;
+        //console.log(_wallBallVector + " " + (typeof _wallBallVector) + " " + _distanceToWall );
+        _wallBallVector.normalize();
+
+        //
+
+        if (_ballPosition.distanceToSquared(_playerPosition) < _maximumDistance || true) {
+            //console.log("distance to wall: " + _distanceToWall);
+            console.log("_wallPosition.y " + _wallPosition.y);
+            console.log("circleWall.position.y " + circleWall.position.y);
+            console.log("circleWall.position.z " + circleWall.position.z);
+            console.log("wall ball vector Y " + box.position.x);
+            var timeToHit = (_wallPosition.x) / (_wallPosition.x * _intensity);
+
+            var _x = _wallBallVector.x * _intensity;
+            var _y = -227.4 + (_wallBallVector.y * _intensity + (980 / 2) * (timeToHit ^ 2) ) / (timeToHit * _intensity );
+            var _z = -5.850006103515625 + _wallBallVector.z * _intensity;
+
+
+            //console.log("wall ball vector Z " + _wallBallVector.z);
+            //_ball.setLinearVelocity(new THREE.Vector3(_wallBallVector.x *_distanceToWall* _intensity, _wallBallVector.y *_distanceToWall * _intensity , _wallBallVector.z * _distanceToWall));
+
+
+            _ball.setLinearVelocity(new THREE.Vector3(_x, _y, _z));
+            console.log("_x:" + _x + "\n_y:" + _y + "\n_z:" + _z + "\nT:" + timeToHit);
+
+
+            console.log("_wallBallVector:" + _wallBallVector.x + " " + _wallBallVector.y + " " + _wallBallVector.z);
+            //alert("_wallPosition:" + _wallPosition.x + " " + _wallPosition.y + " " +_wallPosition.z );
+            //  _ball.setLinearVelocity(new THREE.Vector3(_wallBallVector.x * _intensity * _wallPosition.x, _wallBallVector.y * 9.8 * _intensity * _wallPosition.y, _wallBallVector.z * _intensity *  _wallPosition.z));
+
+            //_ball.setLinearVelocity(_wallBallVector.multiplyScalar(_distanceToWall*2));
+        }
     }
 
     function onDocumentMouseDown(event){
@@ -1709,7 +1679,7 @@ else {
         if ( specialCamera && player)
             camera.position.set  (player.position.x,player.position.y,player.position.z);
 
-        camera.position.y = 59;
+        //camera.position.y = 59;
 
         //camera follows ball
         if ( specialCamera && box )
